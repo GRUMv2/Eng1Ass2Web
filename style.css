@@ -34,13 +34,13 @@ color: #fff;
 
 .hero {
 background: #fdcc04;
-height: 2000px;
+height: 200vh;
 }
 
 .hero-container {
 display: grid;
 grid-template-columns: 1fr 1fr;
-height: 2000px;
+height: 200vh;
 padding: 2rem calc((100vw - 1300px) / 2);
 }
 
