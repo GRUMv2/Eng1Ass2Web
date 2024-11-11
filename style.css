@@ -41,7 +41,7 @@ height: 100vh;
 display: grid;
 grid-template-columns: 1fr 1fr;
 height: 180vh;
-padding: 3rem calc((100vw - 1300px) / 2);
+padding: 2rem calc((100vw - 1300px) / 2);
 }
 
 .divider{
