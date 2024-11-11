@@ -39,7 +39,7 @@ background: #fdcc04;
 .hero-container {
 display: grid;
 grid-template-columns: 1fr 1fr;
-height: 100vh;
+height: 150vh;
 padding: 3rem calc((100vw - 1300px) / 2);
 }
 
