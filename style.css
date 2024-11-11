@@ -40,7 +40,7 @@ height: 2000px;
 .hero-container {
 display: grid;
 grid-template-columns: 1fr 1fr;
-height: 85vh;
+height: 2000px;
 padding: 2rem calc((100vw - 1300px) / 2);
 }
 
