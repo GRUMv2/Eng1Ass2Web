@@ -1,0 +1,5 @@
+@startgantt
+[Initial Planning Timeline] as [Plan1] requires 1 days
+
+[Plan1] starts 
+@endgantt
