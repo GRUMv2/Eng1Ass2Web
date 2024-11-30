@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "3d03afab47e571bc",
+        "id": "f66dbc365f905a0f",
         "type": "tabs",
         "children": [
           {
-            "id": "2e6b205d4160650d",
+            "id": "1338d501ea460f37",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -162,8 +162,9 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "71d5135f0bfb99c8",
+  "active": "1338d501ea460f37",
   "lastOpenFiles": [
-    "deliverables/Arch2.md"
+    "deliverables/Arch2.md",
+    "deliverables/Plan2.md"
   ]
 }

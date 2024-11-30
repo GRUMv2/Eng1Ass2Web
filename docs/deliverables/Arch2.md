@@ -1,11 +1,9 @@
-# ENG 1 - Architecture 2
-- Jacob Tangye
-- Joseph Wipat
-- Isaac Williams-Mayo
-- Hasan Syed
-- Huzaifa Thakur
-- Alex Worsley
-- Charlie Taylor
+### Architecture 2
+- David Lun
+- Alex McBride
+- Harry Muir
+- Phyo Lin
+- Sameer Minhas
 
 The above class diagram shows the planned architecture of our game. To create it, we used
 PlantUML, as it allows for the creation of diagrams that are easy to read, while clearly
