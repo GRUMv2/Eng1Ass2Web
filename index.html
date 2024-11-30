@@ -7,6 +7,32 @@
     <title>Eng1Ass2</title>
 
     <style>
+        :root {
+            /* Default theme (Dark) */
+            --nav-background: #262626;
+            --nav-border: #363636;
+            --main-background: #1e1e1e;
+            /*<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->*/
+            --theme-switch-indicator: url("data:image/svg+xml,%3Csvg%20fill%3D%22%23ffffff%22%20width%3D%22800px%22%20height%3D%22800px%22%20viewBox%3D%220%200%2035%2035%22%20data-name%3D%22Layer%202%22%20id%3D%22b6de87db-e731-4627-aba6-6a97c219f0be%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M17.5%2C25.88a8.38%2C8.38%2C0%2C1%2C1%2C8.38-8.38A8.389%2C8.389%2C0%2C0%2C1%2C17.5%2C25.88Zm0-14.26a5.88%2C5.88%2C0%2C1%2C0%2C5.88%2C5.88A5.887%2C5.887%2C0%2C0%2C0%2C17.5%2C11.62Z%22%2F%3E%3Cpath%20d%3D%22M17.5%2C5.471h-.034A1.251%2C1.251%2C0%2C0%2C1%2C16.25%2C4.187l.075-2.721A1.267%2C1.267%2C0%2C0%2C1%2C17.609.25a1.251%2C1.251%2C0%2C0%2C1%2C1.215%2C1.284l-.075%2C2.721A1.249%2C1.249%2C0%2C0%2C1%2C17.5%2C5.471Z%22%2F%3E%3Cpath%20d%3D%22M26.893%2C9.364a1.25%2C1.25%2C0%2C0%2C1-.859-2.158l1.978-1.871A1.25%2C1.25%2C0%2C0%2C1%2C29.73%2C7.151L27.752%2C9.022A1.242%2C1.242%2C0%2C0%2C1%2C26.893%2C9.364Z%22%2F%3E%3Cpath%20d%3D%22M33.5%2C18.837h-.036l-2.722-.077a1.249%2C1.249%2C0%2C0%2C1-1.213-1.284%2C1.211%2C1.211%2C0%2C0%2C1%2C1.285-1.214l2.721.077a1.25%2C1.25%2C0%2C0%2C1-.035%2C2.5Z%22%2F%3E%3Cpath%20d%3D%22M28.748%2C30.13a1.248%2C1.248%2C0%2C0%2C1-.909-.392L25.97%2C27.759a1.25%2C1.25%2C0%2C1%2C1%2C1.817-1.717l1.869%2C1.98a1.249%2C1.249%2C0%2C0%2C1-.908%2C2.108Z%22%2F%3E%3Cpath%20d%3D%22M17.4%2C34.75h-.037a1.249%2C1.249%2C0%2C0%2C1-1.213-1.285l.079-2.721a1.25%2C1.25%2C0%2C0%2C1%2C2.5.072l-.079%2C2.721A1.249%2C1.249%2C0%2C0%2C1%2C17.4%2C34.75Z%22%2F%3E%3Cpath%20d%3D%22M6.112%2C29.989a1.249%2C1.249%2C0%2C0%2C1-.857-2.159l1.98-1.867A1.25%2C1.25%2C0%2C1%2C1%2C8.95%2C27.781L6.969%2C29.648A1.242%2C1.242%2C0%2C0%2C1%2C6.112%2C29.989Z%22%2F%3E%3Cpath%20d%3D%22M4.221%2C18.72H4.184l-2.721-.081A1.25%2C1.25%2C0%2C0%2C1%2C.251%2C17.352%2C1.237%2C1.237%2C0%2C0%2C1%2C1.537%2C16.14l2.721.081a1.25%2C1.25%2C0%2C0%2C1-.037%2C2.5Z%22%2F%3E%3Cpath%20d%3D%22M8.135%2C9.335a1.248%2C1.248%2C0%2C0%2C1-.91-.393L5.359%2C6.961a1.25%2C1.25%2C0%2C1%2C1%2C1.82-1.715L9.046%2C7.228a1.251%2C1.251%2C0%2C0%2C1-.911%2C2.107Z%22%2F%3E%3C%2Fsvg%3E");
+            --color-primary: #dadada;
+            --color-link: #a68af9;
+            --color-link-hover: #c4b5fb;
+        }
+
+        /* Yeah fuck off with that javascript shite */
+        :root:has(.nav>li>label>input:checked) {
+            /* Alternate theme (Light) */
+            --nav-background: #f6f6f6;
+            --nav-border: #e0e0e0;
+            --main-background: #ffffff;
+            /*<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->*/
+            --theme-switch-indicator: url("data:image/svg+xml,%3Csvg%20fill%3D%22%23000000%22%20width%3D%22800px%22%20height%3D%22800px%22%20viewBox%3D%220%200%2035%2035%22%20data-name%3D%22Layer%202%22%20id%3D%22Layer_2%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M18.44%2C34.68a18.22%2C18.22%2C0%2C0%2C1-2.94-.24%2C18.18%2C18.18%2C0%2C0%2C1-15-20.86A18.06%2C18.06%2C0%2C0%2C1%2C9.59.63%2C2.42%2C2.42%2C0%2C0%2C1%2C12.2.79a2.39%2C2.39%2C0%2C0%2C1%2C1%2C2.41L11.9%2C3.1l1.23.22A15.66%2C15.66%2C0%2C0%2C0%2C23.34%2C21h0a15.82%2C15.82%2C0%2C0%2C0%2C8.47.53A2.44%2C2.44%2C0%2C0%2C1%2C34.47%2C25%2C18.18%2C18.18%2C0%2C0%2C1%2C18.44%2C34.68ZM10.67%2C2.89a15.67%2C15.67%2C0%2C0%2C0-5%2C22.77A15.66%2C15.66%2C0%2C0%2C0%2C32.18%2C24a18.49%2C18.49%2C0%2C0%2C1-9.65-.64A18.18%2C18.18%2C0%2C0%2C1%2C10.67%2C2.89Z%22%2F%3E%3C%2Fsvg%3E");
+            --color-primary: #222222;
+            --color-link: #8a5cf5;
+            --color-link-hover: #a68af9;
+        }
+
+
         @font-face {
             font-family: 'SNPro';
             src: url('SNPro-Regular.woff2') format('woff2');
@@ -14,33 +40,113 @@
             font-style: normal;
         }
 
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
         body {
             font-family: 'SNPro', sans-serif;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            color: var(--color-primary);
+        }
+
+        nav {
+            background: var(--nav-background);
+            border-bottom: 1px solid var(--nav-border);
+            padding: 1em;
+        }
+
+        .nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+
+        .nav > li:first-child {
+            margin-right: auto;
+        }
+
+        .nav > li > label {
+            position: relative;
+            display: inline-block;
+            width: 2ch;
+            height: 100%;
+            background: var(--theme-switch-indicator);
+            background-size: contain;
+
+        }
+
+        .nav > li > label > input {
+            opacity: 0;
+            display: none;
+        }
+
+        main {
+            flex: 1;
+            background: var(--main-background);
+            display: flex;
+        }
+
+        .content {
+            width: 800px;
+            margin-inline: auto;
+            background: var(--main-background);
+            padding: 2em;
+
+        }
+
+        /* Fix for incorrect page spacing */
+        .content :first-child {
+            margin-top: 0;
+        }
+
+        /* Fix browsers doing random stuff with anchors */
+        .content a {
+            all: unset;
+            display: inline;
+            cursor: pointer;
+            color: var(--color-link);
+        }
+
+        .content a:hover {
+            color: var(--color-link-hover);
         }
     </style>
 </head>
 
 <body>
+<nav>
+    <ul class="nav">
+        <li>pickNmix</li>
+        <li><label><input type="checkbox"></label></li>
+    </ul>
+</nav>
 <main>
-    <h1>Eng 1 Coh 2 Grp 7 Ass 2</h1>
+    <div class="content">
+        <h2>Our docs</h2>
+        <ul>
+            <li><a href="https://github.com/GRUMv2/Eng1Ass2Web">Website GitHub</a></li>
+            <li><a href="https://github.com/GRUMv2/Eng1Ass2Cde">Code GitHub</a></li>
+        </ul>
 
-    <h2>Our docs</h2>
-    <ul>
-        <li><a href="https://github.com/GRUMv2/Eng1Ass2Web">Website GitHub</a></li>
-        <li><a href="https://github.com/GRUMv2/Eng1Ass2Cde">Code GitHub</a></li>
-    </ul>
-
-    <h2>Inherited docs</h2>
-    <ul>
-        <li><a href="old_assets/Arch1.pdf">Architecture</a></li>
-        <li><a href="old_assets/Impl1.pdf">Implementation</a></li>
-        <li><a href="old_assets/Plan1.pdf">Method and Plan</a></li>
-        <li><a href="old_assets/Req1.pdf">Requirements</a></li>
-        <li><a href="old_assets/Risk1.pdf">Risk assessment</a></li>
-        <li><a href="old_assets/game.jar">Jar file</a></li>
-        <li><a href="https://github.com/brueing/ENG-1">Build Repository</a></li>
-    </ul>
+        <h2>Inherited docs</h2>
+        <ul>
+            <li><a href="old_assets/Arch1.pdf">Architecture</a></li>
+            <li><a href="old_assets/Impl1.pdf">Implementation</a></li>
+            <li><a href="old_assets/Plan1.pdf">Method and Plan</a></li>
+            <li><a href="old_assets/Req1.pdf">Requirements</a></li>
+            <li><a href="old_assets/Risk1.pdf">Risk assessment</a></li>
+            <li><a href="old_assets/game.jar">Jar file</a></li>
+            <li><a href="https://github.com/brueing/ENG-1">Build Repository</a></li>
+        </ul>
+    </div>
 </main>
-
 </body>
 </html>
