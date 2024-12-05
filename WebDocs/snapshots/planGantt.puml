@@ -1,5 +1,18 @@
 @startgantt
+[Fork the previous groups project] as [Prj1] requires 1 days
 [Initial Planning Timeline] as [Plan1] requires 1 days
+[David, Alex and Harry Architecture Changes and Additions] as [Arch2] requires 7 days
+[David Method Selection and Planning Changes and Additions] as [Plan2] requires 7 days
+[Alex and Harry Implimentation Changes and Additions] as [Imp2] requires 7 days
+[Sameer and Phyo Requirements Changes and Additions] as [Req2] requires 7 days
+[Phyo Risk Assessment Changes and Additions] as [Risk2] requires 7 days
 
-[Plan1] starts 
+Project starts 2024-11-26
+[Prj1] starts 2024-11-26
+[Plan1] starts 2024-11-26
+[Arch2] starts at [Plan1]'s end
+[Plan2] starts at [Plan1]'s end
+[Imp2] starts at [Plan1]'s end
+[Req2] starts at [Plan1]'s end
+[Risk2] starts at [Plan1]'s end
 @endgantt
