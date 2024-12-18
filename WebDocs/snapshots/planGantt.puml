@@ -1,11 +1,15 @@
 @startgantt
 [Fork the previous groups project] as [Prj1] requires 1 days
 [Initial Planning Timeline] as [Plan1] requires 1 days
-[David, Alex and Harry Architecture Changes and Additions] as [Arch2] requires 7 days
+[David, Alex and Harry Architecture Changes and Additions] as [Arch2] requires 14 days
 [David Method Selection and Planning Changes and Additions] as [Plan2] requires 7 days
-[Alex and Harry Implimentation Changes and Additions] as [Imp2] requires 7 days
+[Alex and Harry Implimentation Changes and Additions] as [Imp2] requires 14 days
 [Sameer and Phyo Requirements Changes and Additions] as [Req2] requires 7 days
 [Phyo Risk Assessment Changes and Additions] as [Risk2] requires 7 days
+[Everyone working on Change Report] as [CR] requires 7 days
+[Harry setup basic Continuous Integration] as [CI1] requires 1 days
+[Alex setup basic testing interface] as [Test1] requires 1 days
+[David, Sameer and Phyo take over Testing and Continuous Integration] as [TCI] requires 7 days
 
 Project starts 2024-11-26
 [Prj1] starts 2024-11-26
@@ -15,4 +19,8 @@ Project starts 2024-11-26
 [Imp2] starts at [Plan1]'s end
 [Req2] starts at [Plan1]'s end
 [Risk2] starts at [Plan1]'s end
+[CR] starts at [Plan1]'s end
+[CI1] starts at 2024-12-10
+[Test1] starts at 2024-12-10
+[TCI] starts at 2024-12-11
 @endgantt
