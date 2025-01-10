@@ -91,7 +91,7 @@ Brokers interaction with rest of architecture
 
 ![Broker interaction with architecture](architecture-interactions-with-broker.png)
 
-But after some deciding, it was decided due to time constraints it was easier to contain all components in one large class.
+But after some deciding, it was decided due to time constraints it was easier to contain all components in one large class. Despite the lack of elegance with this implementation, it cut the time of applying the more modular nature of the first drastically.
 
 Revised broker class
 
