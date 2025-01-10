@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Plan2.md",
+                "file": "Arch2.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Plan2"
+              "title": "Arch2"
             }
           }
         ]
@@ -162,10 +162,10 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "ca7c1a33d1eaad6f",
+  "active": "f3cd350b639a23ac",
   "lastOpenFiles": [
-    "Arch2.md",
     "Plan2.md",
+    "Arch2.md",
     "planGantt.png",
     "Plan2.md~"
   ]

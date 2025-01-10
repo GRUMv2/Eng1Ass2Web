@@ -1,15 +1,18 @@
 @startgantt
 [Fork the previous groups project] as [Prj1] requires 1 days
 [Initial Planning Timeline] as [Plan1] requires 1 days
-[David, Alex and Harry Architecture Changes and Additions] as [Arch2] requires 14 days
-[David Method Selection and Planning Changes and Additions] as [Plan2] requires 7 days
-[Alex and Harry Implimentation Changes and Additions] as [Imp2] requires 14 days
-[Sameer and Phyo Requirements Changes and Additions] as [Req2] requires 7 days
+[David, Alex and Harry Architecture Changes and Additions] as [Arch2] requires 47 days
+[David Method Selection and Planning Changes and Additions] as [Plan2] requires 47 days
+[Alex and Harry Implimentation Changes and Additions] as [Imp2] requires 47 days
+[Sameer and Phyo Requirements Changes and Additions] as [Req2] requires 13 days
 [Phyo Risk Assessment Changes and Additions] as [Risk2] requires 7 days
-[Everyone working on Change Report] as [CR] requires 7 days
+[Everyone working on Change Report] as [CR] requires 47 days
 [Harry setup basic Continuous Integration] as [CI1] requires 1 days
 [Alex setup basic testing interface] as [Test1] requires 1 days
-[David, Sameer and Phyo take over Testing and Continuous Integration] as [TCI] requires 7 days
+[Sameer take over Continuous Integration Deliverable] as [CI2] requires 33 days
+[Everyone writing unit tests] as [Test2] requires 2 days
+[Phyo and Sameer User Evaluation] as [UX] requires 3 days
+[David add snapshots onto website] as [web] requires 2 days
 
 Project starts 2024-11-26
 [Prj1] starts 2024-11-26
@@ -22,5 +25,8 @@ Project starts 2024-11-26
 [CR] starts at [Plan1]'s end
 [CI1] starts at 2024-12-10
 [Test1] starts at 2024-12-10
-[TCI] starts at 2024-12-11
+[CI2] starts at 2024-12-11
+[Test2] starts at 2025-01-07
+[UX] starts at 2025-01-10
+[web] starts at 2025-01-10
 @endgantt

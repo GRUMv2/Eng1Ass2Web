@@ -75,7 +75,9 @@ Overhauled Architecture
 
 Harry decided that there wasn't a need to have a seperate Client side group of classes and so move all of its functionality into Main. This was due to the Clients main purpose being to manage 'screens' which manages the 'screens' that is Libgdxs way of handling rendering between Client and Main on a single instance of the Game as it required the constant calling of 'setScreen()' to pass data between the two.
 
-This will be represented by a large group of classes called 'Broker'.
+For the requirement for the game to have achievements and scores there was a need to figure out a solution to how to store that given data so that it can be used in both the Client and Server.
+
+Their solution was to have a 'broker' class which would be dealing out and storing the data between the two sides. It'll be the database for the game to the classes which don't have direct connections to one another. Originally it would be consistent of multiple subclasses which would be the importers for the data to the Server and Client as well as interfaces for defining database and some other classes.
 
 Simple diagram of broker class interactions
 
@@ -85,6 +87,16 @@ Detailed diagram of broker class interactions
 
 ![Diagram of broker class (detailed)](broker-interaction.png)
 
-Full class details of broker class
+Brokers interaction with rest of architecture
 
-![Details of broker class](broker-class.png)
+![Broker interaction with architecture](architecture-interactions-with-broker.png)
+
+But after some deciding, it was decided due to time constraints it was easier to contain all components in one large class.
+
+Revised broker class
+
+![Revised broker class](broker-class.png)
+
+Revised broker interaction with rest of architecture
+
+![Revised broker interaction with architecture](architecture.png)
