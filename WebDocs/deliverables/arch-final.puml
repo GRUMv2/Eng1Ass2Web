@@ -1,0 +1,96 @@
+@startuml
+/'skinparam groupInheritance 2'/
+
+package client {
+    class Renderer
+    class InputHandler
+    class GameWindow #red {
+        REMOVED
+    }
+    enum Screens #grey
+    abstract class AbstractGameScreen #grey
+    class MenuScreen #grey extends AbstractGameScreen
+    class GameScreen extends AbstractGameScreen {
+        (Formerly Game)
+    }
+    class PauseScreen #grey extends AbstractGameScreen
+    class EndScreen #grey extends AbstractGameScreen
+}
+
+class Main #grey
+
+package entities {
+    class GameMap
+    class UI
+    abstract class Entity
+    abstract class ForegroundEntity #grey extends Entity
+    class Cell extends Entity
+    abstract class Obstacle #grey extends ForegroundEntity
+    class Water #grey extends Obstacle
+    abstract class Button #grey extends Entity
+    class BuildingPlaceButton extends Button
+    class PauseButton extends Button
+    class TmpButton #grey extends Button
+    class BuildingFactory #grey
+    abstract class Building extends ForegroundEntity
+    class Gym extends Building
+    class HallsAccommodation extends Building
+    class LectureHall extends Building
+    class Pub extends Building
+    class Restaurant extends Building
+}
+
+package broker #grey {
+    class Broker
+}
+
+package server #grey {
+    class Server
+    class Timekeeper
+    package Simulation #grey {
+        class Simulation
+    }
+    package PopupManager #grey {
+        class PopupManager
+    }
+    package EventHandler #grey {
+        class EventHandler
+        abstract class Event
+        class ExampleEvent extends Event
+        class Achievement extends Event
+    }
+}
+
+
+GameWindow-down[#white]-AbstractGameScreen
+Renderer-down[#white]-AbstractGameScreen
+InputHandler-down[#white]-AbstractGameScreen
+
+GameScreen --[#blue]> GameMap
+GameScreen --[#blue]> UI
+GameScreen --[#blue]> Broker
+GameScreen --[#blue]> BuildingFactory
+Main --[#blue]> Server
+Main --[#blue]> AbstractGameScreen
+Main --[#blue]> Screens
+AbstractGameScreen --[#blue]> Screens
+MenuScreen --[#blue]> Screens
+GameScreen --[#blue]> Screens
+PauseScreen --[#blue]> Screens
+EndScreen --[#blue]> Screens
+Broker --[#blue,thickness=4]> server
+BuildingFactory --[#blue]> Building
+entities --[#blue,thickness=8]> InputHandler
+entities --[#blue,thickness=8]> Renderer
+GameMap --[#blue]> Cell
+GameMap --[#blue]> Building
+GameMap --[#blue]> Obstacle
+UI --[#blue]> Broker
+UI --[#blue]> BuildingFactory
+UI --[#blue]> Button
+server --[#blue,thickness=4]> Broker
+Server --[#blue]> Simulation
+Server --[#blue]> EventHandler
+Server --[#blue]> Timekeeper
+EventHandler --[#blue]> Event
+@enduml

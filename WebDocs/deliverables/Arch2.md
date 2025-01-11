@@ -100,3 +100,7 @@ Revised broker class
 Revised broker interaction with rest of architecture
 
 ![Revised broker interaction with architecture](architecture.png)
+
+The final architecture diagram has the fully mapped out Server classes and packages which handle events and achievements. It also includes new class Timekeeper which handles the pause functionality, as part of our requirements.
+
+![Final architecture diagram](arch-final.png)
