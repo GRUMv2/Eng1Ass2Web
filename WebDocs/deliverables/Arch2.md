@@ -65,6 +65,12 @@ When figuring out the different ways of the classes interacting with each other,
 - Grey Boxes: New additions
 - Thick Blue Arrows: Class talks to pointed destination class or group of classes through other class interactions
 
+There was a need to overhaul the codebase to firstly allow for easier allocation of the project between Alex and Harry, but also to allow for the easier integrations needed for classes that fulfil the functionality requirements. 
+
+Packages 'entities' and 'client' consist of the already existing classes from the previous group with the additions new classes like 'Button' and 'ForegroundEntity' to allow abstraction of some of the existing classes and more extensibility of code.
+
+There is also the addition of 'Server' package which fulfils the requirements the previous group didn't implementation as well as the new requirements set in the second part of the project.
+
 Overhauled Architecture (without backend)
 
 ![Initial Overhaul (without backend)](architecture-interactions-without-server.png)
