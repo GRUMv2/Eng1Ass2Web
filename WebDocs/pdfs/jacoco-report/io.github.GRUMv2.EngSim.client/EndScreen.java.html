@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EndScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.client</a> &gt; <span class="el_source">EndScreen.java</span></div><h1>EndScreen.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.client;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
+import io.github.GRUMv2.EngSim.broker.Broker;
+import io.github.GRUMv2.EngSim.entities.*;
+
+import java.util.ArrayList;
+
+/**
+ * EndScreen - Screen at end
+ * Shows final statistics, score,
+ * leaderboard with prompt for user to add their score,
+ * achievements unlocked during the game,
+ * quit button
+ */
+public class EndScreen extends AbstractGameScreen {
+
+    private final Broker broker;
+
+    private final Leaderboard leaderboard;
+    private final Achievements achievements;
+    private final StatsBox statsBox;
+    private SubmitBox submitBox;
+    private final TmpButton quitButton;
+
+    public EndScreen(Renderer renderer, InputHandler inputHandler) {
+<span class="nc" id="L29">        super(renderer, inputHandler);</span>
+
+<span class="nc" id="L31">        broker = Broker.getInstance();</span>
+
+        // TODO: un-hardcode
+<span class="nc" id="L34">        this.submitBox = new SubmitBox(</span>
+            new Vector2(70, 400),
+            new Vector2(400, 40),
+            this::submitScore
+        );
+
+<span class="nc" id="L40">        this.leaderboard = new Leaderboard(</span>
+            new Vector2(70, 40),
+            new Vector2(400, 280)
+        );
+<span class="nc" id="L44">        this.leaderboard.setValues(new ArrayList&lt;&gt;(Broker.getInstance().getLeaderboard()));</span>
+
+<span class="nc" id="L46">        this.statsBox = new StatsBox(</span>
+            new Vector2(130, 540),
+            new Vector2(280, 160)
+        );
+
+<span class="nc" id="L51">        this.statsBox.setStats(</span>
+<span class="nc" id="L52">            broker.getMoney(),</span>
+<span class="nc" id="L53">            broker.getIncome(),</span>
+<span class="nc" id="L54">            broker.getStudentNumbers(),</span>
+<span class="nc" id="L55">            broker.getStudentSatisfaction(),</span>
+<span class="nc" id="L56">            broker.getStaffNumbers(),</span>
+<span class="nc" id="L57">            broker.getStaffSatisfaction()</span>
+        );
+
+<span class="nc" id="L60">        this.quitButton = new TmpButton(</span>
+            &quot;QUIT&quot;,
+            new Vector2(540, 160),
+            new Vector2(200, 40),
+<span class="nc" id="L64">            () -&gt; this.changeEvent(Screens.QUIT),</span>
+            Color.GRAY
+        );
+
+<span class="nc" id="L68">        this.quitButton.centreText();</span>
+
+<span class="nc" id="L70">        this.achievements = new Achievements(</span>
+            new Vector2(810, 40),
+            new Vector2(400, 500)
+        );
+<span class="nc" id="L74">        this.achievements.setValues(broker.getAchievements().toArray(new String[0]));</span>
+
+<span class="nc" id="L76">    }</span>
+
+    /**
+     * Validate and push the user's score to the leaderboard
+     */
+    public void submitScore() {
+<span class="nc" id="L82">        String input = this.submitBox.getValue();</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (input.isEmpty()) {</span>
+<span class="nc" id="L84">            return;</span>
+        }
+<span class="nc" id="L86">        Broker broker = Broker.getInstance();</span>
+<span class="nc" id="L87">        broker.updateLeaderboard(input, Math.round(broker.getStudentSatisfaction() * 1000));</span>
+<span class="nc" id="L88">        this.leaderboard.setValues(new ArrayList&lt;&gt;(Broker.getInstance().getLeaderboard()));</span>
+        // Trick to make submit box disappear after the user submits
+<span class="nc" id="L90">        this.submitBox = new SubmitBox(new Vector2(), new Vector2(), () -&gt; {</span>
+<span class="nc" id="L91">        }) {</span>
+            @Override
+            public void update(Renderer renderer, InputHandler inputHandler) {
+<span class="nc" id="L94">            }</span>
+        };
+<span class="nc" id="L96">    }</span>
+
+    public void update(Renderer renderer, InputHandler inputHandler) {
+<span class="nc" id="L99">        renderer.drawText(&quot;Game Over&quot;, new Vector2(640, 640), Color.BLACK, 3f, Align.center);</span>
+<span class="nc" id="L100">        this.leaderboard.update(renderer, inputHandler);</span>
+<span class="nc" id="L101">        this.submitBox.update(renderer, inputHandler);</span>
+<span class="nc" id="L102">        this.statsBox.update(renderer, inputHandler);</span>
+<span class="nc" id="L103">        renderer.drawText(&quot;Score: &quot; + Math.round(broker.getStudentSatisfaction() * 1000),</span>
+            new Vector2(270, 500), Color.BLACK, 2f, Align.center);
+<span class="nc" id="L105">        this.quitButton.update(renderer, inputHandler);</span>
+<span class="nc" id="L106">        this.achievements.update(renderer, inputHandler);</span>
+<span class="nc" id="L107">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

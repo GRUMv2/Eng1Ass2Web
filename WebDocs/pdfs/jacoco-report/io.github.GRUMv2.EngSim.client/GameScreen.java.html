@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.client</a> &gt; <span class="el_source">GameScreen.java</span></div><h1>GameScreen.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.client;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.math.Vector2;
+import io.github.GRUMv2.EngSim.broker.Broker;
+import io.github.GRUMv2.EngSim.broker.PopupTicket;
+import io.github.GRUMv2.EngSim.entities.*;
+import io.github.GRUMv2.EngSim.entities.BuildingFactory.Available;
+
+
+/**
+ * The GameScreen class represents the primary visual interface through which the
+ * interactive digital entertainment experience is rendered and perceived by the end-user.
+ * This interface serves as the principal conduit for the graphical and interactive
+ * elements of the game, encapsulating the entirety of the visual and interactive components
+ * that constitute the user's engagement with the game screen.
+ * &lt;p&gt;
+ * Not that anyone really wants to look at the game screen anyway lets be honest
+ * &lt;p&gt;
+ * hope that's enough to satisfy the javadoc gods and their stupid thirst for obvious documentation
+ * &lt;p&gt;
+ * to be fair they probably know that nobody likes java and would prefer to read the code in english
+ * &lt;p&gt;
+ * only doubles the file size tho no stress
+ */
+<span class="fc" id="L28">public class GameScreen extends AbstractGameScreen {</span>
+
+<span class="fc" id="L30">    private Available buildingToPlace = null;</span>
+    private Modes mode;
+    private final GameMap map;
+    private final UI ui;
+    private final Broker broker;
+    private final BuildingFactory builder;
+    private final TmpPopupFactory popupFactory;
+
+    private TmpPopup activePopup;
+
+    private Ghost ghost;
+
+    public GameScreen(Renderer renderer, InputHandler inputHandler) {
+<span class="fc" id="L43">        super(renderer, inputHandler);</span>
+<span class="fc" id="L44">        broker = Broker.getInstance();</span>
+<span class="fc" id="L45">        builder = BuildingFactory.getInstance();</span>
+<span class="fc" id="L46">        popupFactory = TmpPopupFactory.getInstance(this::dismissActivePopup);</span>
+<span class="fc" id="L47">        map = new GameMap(this, broker);</span>
+<span class="fc" id="L48">        ui = new UI(this, broker, builder);</span>
+<span class="fc" id="L49">        this.mode = Modes.NORMAL;</span>
+<span class="fc" id="L50">    }</span>
+
+    @SuppressWarnings({&quot;divzero&quot;, &quot;NumericOverflow&quot;})
+    private void deathByDevZero() {
+<span class="nc" id="L54">        int a = 1 / 0;</span>
+<span class="nc" id="L55">    }</span>
+
+    public void update(Renderer renderer, InputHandler inputHandler) {
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        if (broker.isGameComplete()) {</span>
+<span class="nc" id="L59">            this.changeEvent(Screens.END);</span>
+<span class="nc" id="L60">            return;</span>
+        }
+
+<span class="nc" id="L63">        map.update(renderer, inputHandler);</span>
+<span class="nc" id="L64">        ui.update(renderer, inputHandler);</span>
+
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (this.ghost != null) {</span>
+            // This kind of does the same calculation twice in a slightly different way.
+            // If the draw position was pulled out of Ghost.update() and made obtainable, it could be used
+            // to then calculate the grid tile too for minor efficiency gain
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            if (inputHandler.getMouseInBounds(new Vector2(560, 0), new Vector2(720, 720))) {</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                if (broker.isPlaceable(this.ghost.getBuilding(), this.map.getCellAtPos(inputHandler.getMousePos()))) {</span>
+<span class="nc" id="L72">                    this.ghost.update(renderer, inputHandler);</span>
+
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                } else if (broker.getTimeElapsed() % 1 &gt; 0.6) {</span>
+<span class="nc" id="L75">                    this.ghost.update(renderer, inputHandler);</span>
+                }
+            }
+        }
+
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (this.isInDialog()) {</span>
+<span class="nc" id="L81">            this.activePopup.update(renderer, inputHandler);</span>
+        } else {
+<span class="nc" id="L83">            PopupTicket p = broker.getPendingPopups();</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            if (p != null) {</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">                if (p.isTransient()) {</span>
+<span class="nc" id="L86">                    this.ui.pushNotice(p.getDescription());</span>
+<span class="nc" id="L87">                    broker.resolvePopup();</span>
+                } else {
+<span class="nc" id="L89">                    this.activePopup = popupFactory.newInfobox(p);</span>
+<span class="nc" id="L90">                    this.changeEvent(Screens.GAME);</span>
+                }
+            }
+        }
+
+        // Debug features
+        // The player can trigger it if they like, but it doesn't exactly offer much help
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (Gdx.input.isKeyPressed(Keys.SHIFT_LEFT)) {</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">            if (Gdx.input.isKeyPressed(Keys.F7)) {</span>
+<span class="nc" id="L99">                this.changeEvent(Screens.END);</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">            } else if (Gdx.input.isKeyPressed(Keys.F5)) {</span>
+<span class="nc" id="L101">                broker.queuePopup(new PopupTicket(&quot;Debug&quot;, &quot;Debug popup&quot;, new String[]{&quot;OPTION&quot;}));</span>
+<span class="nc" id="L102">                broker.queuePopup(new PopupTicket(&quot;This is a lot of information in a notice box&quot;));</span>
+<span class="nc" id="L103">                this.changeEvent(Screens.GAME);</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">            } else if (Gdx.input.isKeyPressed(Keys.F6)) {</span>
+<span class="nc" id="L105">                deathByDevZero();</span>
+            }
+        }
+<span class="nc" id="L108">    }</span>
+
+    public void togglePause() {
+<span class="nc" id="L111">        this.changeEvent(Screens.PAUSE);</span>
+<span class="nc" id="L112">    }</span>
+
+    public void dismissActivePopup() {
+<span class="nc" id="L115">        this.activePopup = null;</span>
+<span class="nc" id="L116">        broker.resolvePopup();</span>
+<span class="nc" id="L117">        this.changeEvent(Screens.GAME);</span>
+<span class="nc" id="L118">    }</span>
+
+    public Modes getMode() {
+<span class="fc" id="L121">        return mode;</span>
+    }
+
+    public boolean isInDialog() {
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        return this.activePopup != null;</span>
+    }
+
+    public void toggleMode(Modes mode) {
+<span class="pc bpc" id="L129" title="1 of 3 branches missed.">        switch (mode) {</span>
+            case NORMAL:
+                // Future proofing
+<span class="fc" id="L132">                break;</span>
+            case DESTROY:
+            case MOVE:
+<span class="fc" id="L135">                this.buildingToPlace = null;</span>
+<span class="fc" id="L136">                break;</span>
+            default:
+                break;
+        }
+<span class="fc bfc" id="L140" title="All 2 branches covered.">        if (this.mode == mode) {</span>
+<span class="fc" id="L141">            this.mode = Modes.NORMAL;</span>
+        } else {
+<span class="fc" id="L143">            this.mode = mode;</span>
+        }
+<span class="fc" id="L145">    }</span>
+
+    public Available getBuildingToPlace() {
+<span class="fc" id="L148">        return buildingToPlace;</span>
+    }
+
+    public void setBuildingToPlace(Available buildingType) {
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        if (buildingType == buildingToPlace) {</span>
+<span class="nc" id="L153">            buildingToPlace = null;</span>
+<span class="nc" id="L154">            this.ghost = null;</span>
+        } else {
+<span class="fc" id="L156">            buildingToPlace = buildingType;</span>
+<span class="fc" id="L157">            this.ghost = new Ghost(buildingType);</span>
+        }
+<span class="fc" id="L159">        this.toggleMode(Modes.NORMAL);</span>
+<span class="fc" id="L160">    }</span>
+
+    public void handleCellClick(Vector2 cellPos) {
+<span class="nc bnc" id="L163" title="All 4 branches missed.">        switch (this.mode) {</span>
+            case NORMAL:
+<span class="nc" id="L165">                this.clickBuild(cellPos);</span>
+<span class="nc" id="L166">                break;</span>
+
+            case DESTROY:
+<span class="nc" id="L169">                this.clickDestroy(cellPos);</span>
+<span class="nc" id="L170">                break;</span>
+            case MOVE:
+<span class="nc" id="L172">                this.clickMove(cellPos);</span>
+<span class="nc" id="L173">                break;</span>
+            default:
+                break;
+        }
+<span class="nc" id="L177">    }</span>
+
+    private boolean clickBuild(Vector2 cellPos) {
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        if (buildingToPlace == null) {</span>
+<span class="nc" id="L181">            return false;</span>
+        }
+<span class="nc" id="L183">        Building building = builder.newBuilding(buildingToPlace, cellPos);</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">        assert building != null;</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">        if (broker.getMoney() &lt; building.getCost()) {</span>
+<span class="nc" id="L186">            return false;</span>
+        }
+        // if not holding down shift select none
+<span class="nc bnc" id="L189" title="All 2 branches missed.">        if (!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {</span>
+<span class="nc" id="L190">            this.buildingToPlace = null;</span>
+<span class="nc" id="L191">            this.ghost = null;</span>
+        }
+<span class="nc" id="L193">        return broker.placeBuilding(building);</span>
+    }
+
+    private void clickDestroy(Vector2 cellPos) {
+<span class="nc" id="L197">        broker.destroyBuilding(cellPos);</span>
+<span class="nc" id="L198">    }</span>
+
+    private void clickMove(Vector2 cellPos) {
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        if (this.buildingToPlace == null) {</span>
+<span class="nc" id="L202">            Building building = broker.destroyBuilding(cellPos);</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">            if (building == null) {</span>
+<span class="nc" id="L204">                return;</span>
+            }
+            // TODO: Exception handle
+            // Theoretically throws IllegalArgumentException if building is not within the enum
+            // In practice I don't see how this could ever be triggered, because destroyBuilding
+            // implies a previous placeBuilding, triggered by user UI interaction,
+            // which is generated from the values of Available
+<span class="nc" id="L211">            this.buildingToPlace = Available.get(building.getClass());</span>
+<span class="nc" id="L212">        } else {</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">            if (this.clickBuild(cellPos)) {</span>
+<span class="nc" id="L214">                this.toggleMode(Modes.MOVE);</span>
+            }
+        }
+<span class="nc" id="L217">    }</span>
+
+<span class="fc" id="L219">    public enum Modes {</span>
+<span class="fc" id="L220">        NORMAL(&quot;Normal&quot;),</span>
+<span class="fc" id="L221">        DESTROY(&quot;Destroy&quot;),</span>
+<span class="fc" id="L222">        MOVE(&quot;Move&quot;);</span>
+
+        private final String text;
+
+<span class="fc" id="L226">        Modes(String text) {</span>
+<span class="fc" id="L227">            this.text = text;</span>
+<span class="fc" id="L228">        }</span>
+
+        @Override
+        public String toString() {
+<span class="fc" id="L232">            return this.text;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

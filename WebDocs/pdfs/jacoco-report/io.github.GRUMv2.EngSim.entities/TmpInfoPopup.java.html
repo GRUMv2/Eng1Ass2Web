@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TmpInfoPopup.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.entities</a> &gt; <span class="el_source">TmpInfoPopup.java</span></div><h1>TmpInfoPopup.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.entities;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import io.github.GRUMv2.EngSim.broker.PopupTicket;
+
+/**
+ * TmpInfoPopup
+ */
+public class TmpInfoPopup extends TmpPopup {
+
+<span class="nc" id="L12">    private final String infoButtonText = &quot;OK&quot;;</span>
+
+    public TmpInfoPopup(Runnable popupHook, PopupTicket popup) {
+<span class="nc" id="L15">        super(popupHook, popup);</span>
+<span class="nc" id="L16">        this.setHeaderText(popup.getName());</span>
+<span class="nc" id="L17">        this.setButtons(</span>
+                new TmpButton[]{
+                        new TmpButton(
+<span class="nc" id="L20">                                this.infoButtonText,</span>
+                                // TODO: not this
+                                // arbitrarily centre button based on arbitrary hardcoded coordinates for
+                                // popup window in superclass and arbitrary hardcoded size of button in button class
+<span class="nc" id="L24">                                new Vector2(this.getPos().x + (this.getSize().x / 2) - 125f, this.getPos().y + 20f),</span>
+                                new Vector2(250, 60),
+<span class="nc" id="L26">                                () -&gt; this.dismiss(0),</span>
+                                Color.WHITE
+                        )
+                }
+        );
+<span class="nc" id="L31">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

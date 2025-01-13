@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractGameScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.client</a> &gt; <span class="el_source">AbstractGameScreen.java</span></div><h1>AbstractGameScreen.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.client;
+
+import com.badlogic.gdx.ScreenAdapter;
+
+import java.util.EnumMap;
+
+/**
+ * AbstractGameScreen - Base screen class
+ */
+abstract public class AbstractGameScreen extends ScreenAdapter {
+
+    private final Renderer renderer;
+    private final InputHandler inputHandler;
+
+    private final EnumMap&lt;Screens, Runnable&gt; changeEvents;
+
+<span class="fc" id="L17">    public AbstractGameScreen(Renderer renderer, InputHandler inputHandler) {</span>
+<span class="fc" id="L18">        this.renderer = renderer;</span>
+<span class="fc" id="L19">        this.inputHandler = inputHandler;</span>
+<span class="fc" id="L20">        this.changeEvents = new EnumMap&lt;&gt;(Screens.class);</span>
+<span class="fc" id="L21">    }</span>
+
+    /**
+     * Top level render class called by libGDX
+     * This triggers the chain reaction of update() throughout the game
+     */
+    @Override
+    public void render(float delta) {
+<span class="nc" id="L29">        renderer.update();</span>
+<span class="nc" id="L30">        this.update(this.renderer, this.inputHandler);</span>
+<span class="nc" id="L31">    }</span>
+
+    /**
+     * Call passed Main.changeEvent() method
+     */
+    public void changeEvent(Screens screen) {
+<span class="fc" id="L37">        this.changeEvents.getOrDefault(screen, () -&gt; {</span>
+<span class="fc" id="L38">        }).run();</span>
+<span class="fc" id="L39">    }</span>
+
+    /**
+     * Setter method for changeEvent from Main
+     */
+    public void setChangeEvent(Screens screen, Runnable runnable) {
+<span class="fc" id="L45">        this.changeEvents.put(screen, runnable);</span>
+<span class="fc" id="L46">    }</span>
+
+    /**
+     * Parent update() method for all client screen and entity rendering
+     */
+    abstract public void update(Renderer renderer, InputHandler inputHandler);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

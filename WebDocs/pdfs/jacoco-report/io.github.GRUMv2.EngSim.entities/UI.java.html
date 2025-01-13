@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.entities</a> &gt; <span class="el_source">UI.java</span></div><h1>UI.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.entities;
+
+// TODO, low priority: proper UI toolkit and rewrite
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import io.github.GRUMv2.EngSim.broker.Broker;
+import io.github.GRUMv2.EngSim.client.GameScreen;
+import io.github.GRUMv2.EngSim.client.GameScreen.Modes;
+import io.github.GRUMv2.EngSim.client.InputHandler;
+import io.github.GRUMv2.EngSim.client.Renderer;
+import io.github.GRUMv2.EngSim.entities.BuildingFactory.Available;
+
+public class UI extends Entity {
+
+    // TODO: -&gt; Settings
+<span class="fc" id="L17">    private final String TITLE = &quot;University Simulator&quot;;</span>
+
+    private final GameScreen game;
+    private final Broker broker;
+    private final PauseButton pauseButton;
+    private final BuildingPlaceButton[] buildingPlaceButtons;
+    private final TmpButton[] actionButtons;
+    private final StatsBox statsBox;
+    private final NoticeBox noticeBox;
+
+    private int updateTime;
+
+<span class="fc" id="L29">    public UI(GameScreen game, Broker broker, BuildingFactory builder) {</span>
+<span class="fc" id="L30">        this.broker = broker;</span>
+<span class="fc" id="L31">        this.game = game;</span>
+<span class="fc" id="L32">        pauseButton = new PauseButton(</span>
+            new Vector2(520, 680),
+<span class="fc" id="L34">            game::togglePause</span>
+        );
+
+<span class="fc" id="L37">        this.actionButtons = new TmpButton[]{</span>
+            new TmpButton(
+<span class="fc" id="L39">                Modes.DESTROY.toString(),</span>
+                new Vector2(20, 410),
+                new Vector2(250, 60),
+<span class="nc" id="L42">                () -&gt; game.toggleMode(Modes.DESTROY),</span>
+                Modes.DESTROY
+            ),
+            new TmpButton(
+<span class="fc" id="L46">                Modes.MOVE.toString(),</span>
+                new Vector2(290, 410),
+                new Vector2(250, 60),
+<span class="nc" id="L49">                () -&gt; game.toggleMode(Modes.MOVE),</span>
+                Modes.MOVE
+            )
+        };
+
+<span class="fc" id="L54">        Available[] availableBuildings = Available.values();</span>
+<span class="fc" id="L55">        this.buildingPlaceButtons = new BuildingPlaceButton[availableBuildings.length];</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (int i = 0; i &lt; availableBuildings.length; i++) {</span>
+<span class="fc" id="L57">            Available buildingType = availableBuildings[i]; // define here or lambda complains</span>
+<span class="fc" id="L58">            buildingPlaceButtons[i] = new BuildingPlaceButton(</span>
+                new Vector2(20, 330 - (i * 80)),
+                new Vector2(520, 60),
+                buildingType,
+<span class="nc" id="L62">                () -&gt; game.setBuildingToPlace(buildingType)</span>
+            );
+        }
+
+<span class="fc" id="L66">        this.statsBox = new StatsBox(</span>
+            new Vector2(20, 480),
+            new Vector2(250, 180)
+        );
+
+<span class="fc" id="L71">        this.noticeBox = new NoticeBox(</span>
+            new Vector2(290, 480),
+            new Vector2(250, 180)
+        );
+<span class="fc" id="L75">    }</span>
+
+    public void pushNotice(String notice) {
+<span class="nc" id="L78">        this.noticeBox.put(notice);</span>
+<span class="nc" id="L79">    }</span>
+
+    @Override
+    public void update(Renderer renderer, InputHandler inputHandler) {
+
+        // draw the title
+<span class="nc" id="L85">        Vector2 titlePos = new Vector2(20, 700);</span>
+<span class="nc" id="L86">        renderer.drawText(this.TITLE, titlePos, Color.BLACK, 1.5f);</span>
+
+        // draw the time display
+<span class="nc" id="L89">        String timeLeftString = broker.getTimeLeftString();</span>
+<span class="nc" id="L90">        Vector2 timePos = new Vector2(20, 680);</span>
+<span class="nc" id="L91">        renderer.drawText(timeLeftString, timePos, Color.BLACK, 1f);</span>
+
+        // update pause button
+<span class="nc" id="L94">        pauseButton.update(renderer, inputHandler);</span>
+
+<span class="nc" id="L96">        renderer.drawText(</span>
+<span class="nc" id="L97">            &quot;Mode: &quot; + game.getMode(),</span>
+            new Vector2(350, 700),
+            Color.BLACK,
+            1f
+        );
+
+        // draw the selected building
+<span class="nc" id="L104">        renderer.drawText(</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            &quot;Selected: &quot; + (game.getBuildingToPlace() == null ? &quot;None&quot; : game.getBuildingToPlace()),</span>
+            new Vector2(350, 680),
+            Color.BLACK,
+            1f
+        );
+
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if (this.updateTime == broker.getTimeLeft()) {</span>
+<span class="nc" id="L112">            this.statsBox.setStats(broker.getMoney(), broker.getIncome());</span>
+        } else {
+<span class="nc" id="L114">            this.statsBox.setStats(</span>
+<span class="nc" id="L115">                broker.getMoney(),</span>
+<span class="nc" id="L116">                broker.getIncome(),</span>
+<span class="nc" id="L117">                broker.getStudentNumbers(),</span>
+<span class="nc" id="L118">                broker.getStudentSatisfaction(),</span>
+<span class="nc" id="L119">                broker.getStaffNumbers(),</span>
+<span class="nc" id="L120">                broker.getStaffSatisfaction()</span>
+            );
+<span class="nc" id="L122">            this.updateTime = broker.getTimeLeft();</span>
+        }
+
+<span class="nc" id="L125">        this.statsBox.update(renderer, inputHandler);</span>
+
+<span class="nc" id="L127">        this.noticeBox.update(renderer, inputHandler);</span>
+
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (!this.game.isInDialog()) {</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">            for (TmpButton button : this.actionButtons) {</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">                button.update(renderer, inputHandler, game.getMode() == button.getMode() ? Color.GRAY : Color.LIGHT_GRAY);</span>
+            }
+
+            // update the building place buttons
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            for (BuildingPlaceButton buildingPlaceButton : buildingPlaceButtons) {</span>
+<span class="nc" id="L136">                buildingPlaceButton.setCount(broker.getBuildingCount(buildingPlaceButton.getBuildingType()));</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                buildingPlaceButton.update(renderer, inputHandler, game.getBuildingToPlace() == buildingPlaceButton.getBuildingType());</span>
+            }
+        }
+<span class="nc" id="L140">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

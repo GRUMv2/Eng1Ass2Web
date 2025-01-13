@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Cell.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.entities</a> &gt; <span class="el_source">Cell.java</span></div><h1>Cell.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.entities;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import io.github.GRUMv2.EngSim.client.InputHandler;
+import io.github.GRUMv2.EngSim.client.Renderer;
+
+public class Cell extends Entity {
+    private static final int BORDER_WIDTH = 1;
+    // TODO: -&gt; Settings
+    private static final float CELL_WIDTH = (float) 720 / 30;
+
+    private final Vector2 pos;
+    private final Vector2 size;
+
+    @SuppressWarnings(&quot;SuspiciousNameCombination&quot;)
+<span class="fc" id="L17">    public Cell(Vector2 mapPos, Runnable handleClick) {</span>
+        // TODO: Button rendering abstraction
+<span class="fc" id="L19">        this.setHandleClick(handleClick);</span>
+        // TODO: un-hardcode
+<span class="fc" id="L21">        pos = new Vector2((1280 - 720) + (mapPos.x * CELL_WIDTH), mapPos.y * CELL_WIDTH);</span>
+<span class="fc" id="L22">        size = new Vector2(CELL_WIDTH, CELL_WIDTH);</span>
+<span class="fc" id="L23">    }</span>
+
+    // TODO: Button rendering abstraction (?)
+    @Override
+    public void update(Renderer renderer, InputHandler inputHandler) {
+        // TODO: style
+        // Just for UI style I think there'll be a need to replace this border trick
+        // with something more formal
+        // Or at very least abstract the trick to Renderer so it can be used in
+        // arbitrary classes
+        // draw black border
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        Color borderColor = inputHandler.getMouseInBounds(pos, size) ? Color.WHITE : Color.BLACK;</span>
+<span class="nc" id="L35">        renderer.drawRect(pos, size, borderColor);</span>
+
+        // draw green cell
+<span class="nc" id="L38">        renderer.drawRect(</span>
+            new Vector2(pos.x + BORDER_WIDTH, pos.y + BORDER_WIDTH),
+            new Vector2(size.x - (2 * BORDER_WIDTH), size.y - (2 * BORDER_WIDTH)),
+            Color.GREEN
+        );
+
+<span class="nc bnc" id="L44" title="All 4 branches missed.">        if (inputHandler.getMouseClicked() &amp;&amp; inputHandler.getMouseInBounds(pos, size)) {</span>
+<span class="nc" id="L45">            this.click();</span>
+        }
+<span class="nc" id="L47">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

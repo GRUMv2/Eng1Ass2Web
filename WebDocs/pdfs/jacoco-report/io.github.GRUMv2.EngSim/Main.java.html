@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim;
+
+
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import io.github.GRUMv2.EngSim.server.Server;
+import io.github.GRUMv2.EngSim.broker.Broker;
+import io.github.GRUMv2.EngSim.client.*;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+/**
+ * Main - Init class
+ * Init LibGDX, server and general setup; handle screen changes
+ */
+
+public class Main extends Game {
+
+    public final static int WIDTH = 1280;
+    public final static int HEIGHT = 720;
+
+    private OrthographicCamera camera;
+    private InputMultiplexer inputMultiplexer;
+    private Renderer renderer;
+    private InputHandler inputHandler;
+    private AbstractGameScreen gameScreen;
+
+    private final Server server;
+    private final Broker broker;
+    private GameScreen game;
+
+<span class="nc" id="L42">    public Main() {</span>
+        // NOTE: At this stage of execution libGDX is not initialised
+        // and will not be until it calls Main.create()
+        // Anything within the constructor of Client cannot attempt
+        // to interact with libGDX objects until its create() function
+
+<span class="nc" id="L48">        server = new Server(60); // Tick 60 times a second</span>
+<span class="nc" id="L49">        server.start();  // starts paused dont worry</span>
+
+<span class="nc" id="L51">        broker = Broker.getInstance();</span>
+<span class="nc" id="L52">    }</span>
+
+    /**
+     * Initialise master libGDX classes used throughout client
+     */
+    public void create() {
+<span class="nc" id="L58">        this.loadLeaderboard();</span>
+<span class="nc" id="L59">        this.camera = createCamera();</span>
+<span class="nc" id="L60">        this.inputMultiplexer = new InputMultiplexer();</span>
+<span class="nc" id="L61">        Gdx.input.setInputProcessor(inputMultiplexer);</span>
+<span class="nc" id="L62">        this.renderer = new Renderer(this.camera);</span>
+<span class="nc" id="L63">        this.inputHandler = new InputHandler(this.camera);</span>
+<span class="nc" id="L64">        this.game = new GameScreen(renderer, inputHandler);</span>
+<span class="nc" id="L65">        this.game.setChangeEvent(Screens.PAUSE, () -&gt; changeScreen(Screens.PAUSE));</span>
+<span class="nc" id="L66">        this.game.setChangeEvent(Screens.END, () -&gt; changeScreen(Screens.END));</span>
+<span class="nc" id="L67">        this.game.setChangeEvent(Screens.GAME, () -&gt; this.changeScreen(Screens.GAME));</span>
+<span class="nc" id="L68">        this.gameScreen = this.game;</span>
+        // Start with switching to main menu
+<span class="nc" id="L70">        this.changeScreen(Screens.MENU);</span>
+<span class="nc" id="L71">    }</span>
+
+    /**
+     * Switch box to swap between different game screens, signalling the server accordingly
+     * Assigns ability to switch to other screens selectively
+     *
+     * @param screen screen to change to
+     */
+    public void changeScreen(Screens screen) {
+<span class="nc" id="L80">        this.gameScreen.dispose();</span>
+<span class="nc bnc" id="L81" title="All 6 branches missed.">        switch (screen) {</span>
+            case MENU:
+<span class="nc" id="L83">                this.gameScreen = new MenuScreen(renderer, inputHandler);</span>
+<span class="nc" id="L84">                this.gameScreen.setChangeEvent(Screens.GAME, () -&gt; this.changeScreen(Screens.GAME));</span>
+<span class="nc" id="L85">                this.gameScreen.setChangeEvent(Screens.QUIT, () -&gt; this.changeScreen(Screens.QUIT));</span>
+
+<span class="nc bnc" id="L87" title="All 2 branches missed.">                if (!this.server.isPaused()) {</span>
+<span class="nc" id="L88">                    this.server.Pause();</span>
+                }
+                break;
+            case GAME:
+<span class="nc" id="L92">                this.gameScreen = this.game;</span>
+                // hacky but works
+<span class="nc bnc" id="L94" title="All 2 branches missed.">                if (this.server.timeKeeper.currentGameTime() == 0) {</span>
+<span class="nc" id="L95">                    this.server.timeKeeper.start();</span>
+                }
+<span class="nc bnc" id="L97" title="All 4 branches missed.">                if (!this.game.isInDialog() &amp;&amp; this.server.isPaused()) {</span>
+<span class="nc" id="L98">                    this.server.Resume();</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">                } else if (this.game.isInDialog()) {</span>
+<span class="nc" id="L100">                    this.server.Pause();</span>
+                }
+                break;
+            case PAUSE:
+<span class="nc" id="L104">                this.gameScreen = new PauseScreen(renderer, inputHandler);</span>
+<span class="nc" id="L105">                this.gameScreen.setChangeEvent(Screens.GAME, () -&gt; this.changeScreen(Screens.GAME));</span>
+<span class="nc" id="L106">                this.gameScreen.setChangeEvent(Screens.QUIT, () -&gt; this.changeScreen(Screens.QUIT));</span>
+<span class="nc" id="L107">                this.server.Pause();</span>
+<span class="nc" id="L108">                broker.incrementGamePausedCount();</span>
+<span class="nc" id="L109">                break;</span>
+            case END:
+<span class="nc" id="L111">                this.gameScreen = new EndScreen(renderer, inputHandler);</span>
+<span class="nc" id="L112">                this.gameScreen.setChangeEvent(Screens.QUIT, () -&gt; this.changeScreen(Screens.QUIT));</span>
+<span class="nc" id="L113">                this.server.Pause();</span>
+<span class="nc" id="L114">                break;</span>
+            case QUIT:
+<span class="nc" id="L116">                this.quit();</span>
+<span class="nc" id="L117">                this.server.Stop();</span>
+<span class="nc" id="L118">                break;</span>
+            default:
+                break;
+        }
+<span class="nc" id="L122">        this.setScreen(this.gameScreen);</span>
+<span class="nc" id="L123">    }</span>
+
+    // Not sure why it's necessary to create a custom camera here rather than
+    // creating a viewport and using that for everything.
+    // Runs once and isn't in the way of anything so leave for now.
+    private OrthographicCamera createCamera() {
+<span class="nc" id="L129">        Vector2 screenSize = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());</span>
+<span class="nc" id="L130">        OrthographicCamera newCamera = new OrthographicCamera();</span>
+<span class="nc" id="L131">        FitViewport viewport = new FitViewport(WIDTH, HEIGHT, newCamera);</span>
+<span class="nc" id="L132">        viewport.apply();</span>
+<span class="nc" id="L133">        viewport.update((int) screenSize.x, (int) screenSize.y, true);</span>
+        // according to local CI this is the most efficient way to do this lol
+<span class="nc" id="L135">        newCamera.position.set((float) (int) newCamera.viewportWidth / 2, (float) (int) newCamera.viewportHeight / 2, 0);</span>
+<span class="nc" id="L136">        newCamera.update();</span>
+<span class="nc" id="L137">        return newCamera;</span>
+    }
+
+    @Override
+    public void render() {
+<span class="nc" id="L142">        broker.setClientHeartbeat(System.currentTimeMillis());</span>
+
+        // If server is kil, quit client
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (broker.clientSuicide()) {</span>
+<span class="nc" id="L146">            System.out.println(&quot;[ HTM ] THE WHITMAN IS ACTIVE AND HAS BEEN DISPATCHED (client)&quot;);</span>
+<span class="nc" id="L147">            this.quit();</span>
+        }
+
+<span class="nc" id="L150">        super.render();</span>
+<span class="nc" id="L151">    }</span>
+
+    // kill everything
+    // This must only be called on sysexit otherwise everything is kil
+    @Override
+    public void dispose() {
+<span class="nc" id="L157">        this.writeLeaderboard();</span>
+<span class="nc" id="L158">        server.Stop();</span>
+<span class="nc" id="L159">        this.renderer.dispose();</span>
+<span class="nc" id="L160">        super.dispose();</span>
+<span class="nc" id="L161">        System.out.println(&quot;aAAAaaaAAaaaAAaAA&quot;);</span>
+<span class="nc" id="L162">    }</span>
+
+    public void quit() {
+<span class="nc" id="L165">        dispose();</span>
+<span class="nc" id="L166">        System.exit(0);</span>
+<span class="nc" id="L167">    }</span>
+
+    private FileHandle getLeaderboardFile() {
+<span class="nc" id="L170">        return Gdx.files.local(&quot;leaderboard.csv&quot;);</span>
+    }
+
+    /**
+     * Parse saved leaderboard, if it exists, and push to Broker as SimpleImmutableEntry
+     */
+    private void loadLeaderboard() {
+<span class="nc" id="L177">        FileHandle leaderboardFile = this.getLeaderboardFile();</span>
+<span class="nc bnc" id="L178" title="All 4 branches missed.">        if (!leaderboardFile.exists() || leaderboardFile.isDirectory()) {</span>
+<span class="nc" id="L179">            System.out.println(&quot;[ MAN ] Could not load leaderboard file&quot;);</span>
+<span class="nc" id="L180">            return;</span>
+        }
+
+<span class="nc" id="L183">        String leaderboard = &quot;&quot;;</span>
+        try {
+<span class="nc" id="L185">            leaderboard = leaderboardFile.readString();</span>
+<span class="nc" id="L186">        } catch (GdxRuntimeException e) {</span>
+<span class="nc" id="L187">            System.out.println(&quot;[ MAN ] Could not load leaderboard file&quot;);</span>
+            // Continue because we'll just use a blank one
+<span class="nc" id="L189">        }</span>
+
+<span class="nc" id="L191">        Broker broker = Broker.getInstance();</span>
+
+<span class="nc bnc" id="L193" title="All 2 branches missed.">        for (String line : leaderboard.split(&quot;\\r?\\n&quot;)) {</span>
+            // Ignore invalid lines and continue
+            // Leaderboard is written anew on each exit
+<span class="nc" id="L196">            String[] splitLine = line.split(&quot;,&quot;);</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">            if (splitLine.length &lt; 2) {</span>
+<span class="nc" id="L198">                System.out.println(&quot;[ MAN ] Invalid line in leaderboard. Skipping.&quot;);</span>
+<span class="nc" id="L199">                continue;</span>
+            }
+<span class="nc" id="L201">            String scoreS = splitLine[splitLine.length - 1];</span>
+<span class="nc" id="L202">            String name = String.join(&quot;,&quot;, Arrays.copyOfRange(splitLine, 0, splitLine.length - 1));</span>
+
+<span class="nc bnc" id="L204" title="All 4 branches missed.">            if (name.isEmpty() || scoreS.isEmpty()) {</span>
+<span class="nc" id="L205">                System.out.println(&quot;[ MAN ] Invalid line in leaderboard. Skipping.&quot;);</span>
+<span class="nc" id="L206">                continue;</span>
+            }
+
+            try {
+<span class="nc" id="L210">                int score = Integer.parseInt(scoreS);</span>
+<span class="nc" id="L211">                broker.updateLeaderboard(name, score);</span>
+<span class="nc" id="L212">            } catch (NumberFormatException e) {</span>
+<span class="nc" id="L213">                System.out.println(&quot;[ MAN ] Invalid line in leaderboard. Skipping.&quot;);</span>
+<span class="nc" id="L214">            }</span>
+        }
+<span class="nc" id="L216">    }</span>
+
+    /**
+     * Save leaderboard to disk
+     */
+    private void writeLeaderboard() {
+<span class="nc" id="L222">        FileHandle leaderboardFile = this.getLeaderboardFile();</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">        if (leaderboardFile.isDirectory()) {</span>
+            // TODO: Check file permissions?
+<span class="nc" id="L225">            System.out.println(&quot;[ MAN ] Could not open leaderboard file for writing&quot;);</span>
+<span class="nc" id="L226">            return;</span>
+        }
+
+        Writer writer;
+        try {
+<span class="nc" id="L231">            writer = leaderboardFile.writer(false);</span>
+<span class="nc" id="L232">        } catch (GdxRuntimeException e) {</span>
+<span class="nc" id="L233">            System.out.println(&quot;[ MAN ] Could not open leaderboard file for writing&quot;);</span>
+<span class="nc" id="L234">            System.out.println(&quot;[ MAN ] &quot; + e);</span>
+<span class="nc" id="L235">            return;</span>
+<span class="nc" id="L236">        }</span>
+
+<span class="nc" id="L238">        ArrayList&lt;SimpleImmutableEntry&lt;String, Integer&gt;&gt; leaderboard = new ArrayList&lt;&gt;(Broker.getInstance().getLeaderboard());</span>
+<span class="nc" id="L239">        String[] splitLine = new String[leaderboard.size()];</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">        for (int i = 0; i &lt; splitLine.length; i++) {</span>
+            try {
+<span class="nc" id="L242">                writer.write(String.format(String.join(&quot;,&quot;, leaderboard.get(i).getKey(), String.valueOf(leaderboard.get(i).getValue())) + &quot;%n&quot;));</span>
+<span class="nc" id="L243">            } catch (IOException e) {</span>
+<span class="nc" id="L244">                System.out.println(&quot;[ MAN ] Could not open leaderboard file for writing&quot;);</span>
+<span class="nc" id="L245">                System.out.println(&quot;[ MAN ] &quot; + e);</span>
+<span class="nc" id="L246">                return;</span>
+<span class="nc" id="L247">            }</span>
+        }
+        try {
+<span class="nc" id="L250">            writer.close();</span>
+<span class="nc" id="L251">        } catch (IOException e) {</span>
+<span class="nc" id="L252">            System.out.println(&quot;[ MAN ] Could not open leaderboard file for writing&quot;);</span>
+<span class="nc" id="L253">            System.out.println(&quot;[ MAN ] &quot; + e);</span>
+<span class="nc" id="L254">        }</span>
+<span class="nc" id="L255">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

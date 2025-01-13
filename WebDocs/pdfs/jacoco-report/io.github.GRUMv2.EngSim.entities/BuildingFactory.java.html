@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BuildingFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.entities</a> &gt; <span class="el_source">BuildingFactory.java</span></div><h1>BuildingFactory.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.entities;
+
+import com.badlogic.gdx.math.Vector2;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+
+/**
+ * BuildingFactory
+ */
+public final class BuildingFactory {
+
+    private static BuildingFactory instance;
+
+    private BuildingFactory() {
+    }
+
+    public static BuildingFactory getInstance() {
+<span class="fc bfc" id="L19" title="All 2 branches covered.">        if (instance == null) {</span>
+<span class="fc" id="L20">            instance = new BuildingFactory();</span>
+        }
+<span class="fc" id="L22">        return instance;</span>
+    }
+
+    public Building newBuilding(Available building, Vector2 mapPos) {
+        try {
+<span class="fc" id="L27">            return building.getBuilding(mapPos);</span>
+<span class="nc" id="L28">        } catch (NoSuchMethodException |</span>
+                 InvocationTargetException |
+                 InstantiationException |
+                 IllegalAccessException e) {
+<span class="nc" id="L32">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L33">            return null;</span>
+        }
+    }
+
+<span class="fc" id="L37">    public enum Available {</span>
+<span class="fc" id="L38">        GYM(Gym.class),</span>
+<span class="fc" id="L39">        HALLS(Halls.class),</span>
+<span class="fc" id="L40">        LECTURE_HALL(LectureHall.class),</span>
+<span class="fc" id="L41">        PUB(Pub.class),</span>
+<span class="fc" id="L42">        RESTAURANT(Restaurant.class);</span>
+
+<span class="fc" id="L44">        private static final HashMap&lt;Class&lt;? extends Building&gt;, Available&gt; lookup = new HashMap&lt;&gt;();</span>
+
+        static {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            for (Available d : Available.values()) {</span>
+<span class="fc" id="L48">                lookup.put(d.getBuildingClass(), d);</span>
+            }
+<span class="fc" id="L50">        }</span>
+
+        private final Class&lt;? extends Building&gt; building;
+
+
+<span class="fc" id="L55">        Available(Class&lt;? extends Building&gt; building) {</span>
+<span class="fc" id="L56">            this.building = building;</span>
+<span class="fc" id="L57">        }</span>
+
+        public static Available get(Class&lt;? extends Building&gt; building) {
+<span class="fc" id="L60">            return lookup.get(building);</span>
+        }
+
+        private Building getBuilding(Vector2 mapPos) throws
+            NoSuchMethodException,
+            InvocationTargetException,
+            InstantiationException,
+            IllegalAccessException {
+<span class="fc" id="L68">            return this.building.getDeclaredConstructor(Vector2.class).newInstance(mapPos);</span>
+        }
+
+        private Class&lt;? extends Building&gt; getBuildingClass() {
+<span class="fc" id="L72">            return this.building;</span>
+        }
+
+        @Override
+        public String toString() {
+<span class="nc" id="L77">            return this.building.getSimpleName();</span>
+        }
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

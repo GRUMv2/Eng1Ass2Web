@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StudentWalkSimulation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.server.simulation</a> &gt; <span class="el_source">StudentWalkSimulation.java</span></div><h1>StudentWalkSimulation.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.server.simulation;
+
+import com.badlogic.gdx.math.Vector2;
+import io.github.GRUMv2.EngSim.entities.*;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * This class is responsible for simulating the student walking around campus
+ */
+public class StudentWalkSimulation {
+<span class="nc" id="L13">    final Map&lt;AbstractMap.SimpleEntry&lt;Class&lt;? extends ForegroundEntity&gt;, Class&lt;? extends ForegroundEntity&gt;&gt;, Integer&gt; thingsToCheck = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L14">    final ArrayList&lt;Double&gt; scores = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L16">    StudentWalkSimulation() {</span>
+<span class="nc" id="L17">        thingsToCheck.put(new AbstractMap.SimpleEntry&lt;&gt;(Water.class, Halls.class), 2);</span>
+<span class="nc" id="L18">        thingsToCheck.put(new AbstractMap.SimpleEntry&lt;&gt;(Water.class, Restaurant.class), 6);</span>
+<span class="nc" id="L19">        thingsToCheck.put(new AbstractMap.SimpleEntry&lt;&gt;(Halls.class, Gym.class), 4);</span>
+<span class="nc" id="L20">        thingsToCheck.put(new AbstractMap.SimpleEntry&lt;&gt;(Halls.class, Pub.class), 6);</span>
+<span class="nc" id="L21">        thingsToCheck.put(new AbstractMap.SimpleEntry&lt;&gt;(Halls.class, Restaurant.class), 1);</span>
+<span class="nc" id="L22">        thingsToCheck.put(new AbstractMap.SimpleEntry&lt;&gt;(Halls.class, LectureHall.class), 8);</span>
+
+        // Don't put pubs next to restaurants or gyms
+<span class="nc" id="L25">        thingsToCheck.put(new AbstractMap.SimpleEntry&lt;&gt;(Restaurant.class, Pub.class), -2);</span>
+<span class="nc" id="L26">        thingsToCheck.put(new AbstractMap.SimpleEntry&lt;&gt;(Gym.class, Pub.class), -2);</span>
+<span class="nc" id="L27">    }</span>
+
+    /**
+     * Manhattan distance. could be improved but oh well lol
+     */
+    private double heuristic_distance(Vector2 a, Vector2 b) {
+<span class="nc" id="L33">        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);</span>
+    }
+
+    /**
+     * A* algorithm to calculate the distance between two points
+     *
+     * @param grid        the grid of the campus
+     * @param from        the starting point
+     * @param to          the ending point
+     * @param maxDistance distance the algorithm will time out (prevents slow server)
+     * @return the distance between the two points
+     */
+    private double distanceByAStar(ConcurrentHashMap&lt;Vector2, ForegroundEntity&gt; grid, Vector2 from, Vector2 to, double maxDistance) {
+<span class="nc" id="L46">        Map&lt;Vector2, Double&gt; current_score = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L47">        Map&lt;Vector2, Double&gt; straight_line_score = new HashMap&lt;&gt;();</span>
+
+        // saves almost 4ms per 32 iterations!!!!!
+<span class="nc" id="L50">        PriorityQueue&lt;Vector2&gt; queue = new PriorityQueue&lt;&gt;(Comparator.comparingDouble(node -&gt; straight_line_score.getOrDefault(node, Double.MAX_VALUE)));</span>
+
+<span class="nc" id="L52">        Set&lt;Vector2&gt; visited = new HashSet&lt;&gt;();</span>
+
+<span class="nc" id="L54">        current_score.put(from, 0.0);</span>
+<span class="nc" id="L55">        straight_line_score.put(from, heuristic_distance(from, to));</span>
+<span class="nc" id="L56">        queue.add(from);</span>
+
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        while (!queue.isEmpty()) {</span>
+<span class="nc" id="L59">            Vector2 current = queue.poll();</span>
+
+            // TODO: Is returning the maxDistance the best way to handle this?
+<span class="nc bnc" id="L62" title="All 2 branches missed.">            if (current_score.getOrDefault(current, Double.MAX_VALUE) &gt; maxDistance) {</span>
+                // System.out.println(&quot;Maximum allowed distance exceeded.&quot;);
+<span class="nc" id="L64">                return maxDistance;</span>
+            }
+
+<span class="nc bnc" id="L67" title="All 2 branches missed.">            if (current.equals(to)) {</span>
+<span class="nc" id="L68">                return current_score.get(current);</span>
+            }
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            if (visited.contains(current)) continue;</span>
+<span class="nc" id="L72">            visited.add(current);</span>
+
+            // Why oh why does java have to be so... java
+            // for direction in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            for (int[] direction : new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {</span>
+<span class="nc" id="L77">                Vector2 neighbor = new Vector2(current.x + direction[0], current.y + direction[1]);</span>
+
+<span class="nc bnc" id="L79" title="All 4 branches missed.">                if (grid.containsKey(neighbor) &amp;&amp; !neighbor.equals(to)) continue;</span>
+
+<span class="nc" id="L81">                double tentativeGScore = current_score.get(current) + 1;</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">                if (tentativeGScore &lt; current_score.getOrDefault(neighbor, Double.MAX_VALUE)) {</span>
+<span class="nc" id="L83">                    current_score.put(neighbor, tentativeGScore);</span>
+<span class="nc" id="L84">                    straight_line_score.put(neighbor, tentativeGScore + heuristic_distance(neighbor, to));</span>
+<span class="nc" id="L85">                    queue.add(neighbor);</span>
+                }
+            }
+<span class="nc" id="L88">        }</span>
+
+        // w o m p    w o m p
+        // TODO: Should this be -1 or maxDistance?
+<span class="nc" id="L92">        return -1;</span>
+    }
+
+    /**
+     * Calculate the score of the simulation
+     *
+     * @param grid the grid of the campus
+     * @param map  basically the grid, read {@link io.github.GRUMv2.EngSim.server.Server}
+     */
+    void tick(ConcurrentHashMap&lt;Vector2, ForegroundEntity&gt; grid, HashMap&lt;Class&lt;? extends ForegroundEntity&gt;, ArrayList&lt;Vector2&gt;&gt; map) {
+<span class="nc" id="L102">        ArrayList&lt;Double&gt; totalDistances = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        for (AbstractMap.SimpleEntry&lt;Class&lt;? extends ForegroundEntity&gt;, Class&lt;? extends ForegroundEntity&gt;&gt; thing : thingsToCheck.keySet()) {</span>
+<span class="nc" id="L105">            Class&lt;? extends ForegroundEntity&gt; thingA = thing.getKey();</span>
+<span class="nc" id="L106">            Class&lt;? extends ForegroundEntity&gt; thingB = thing.getValue();</span>
+
+            // skip thing if either of the parts are not present
+<span class="nc bnc" id="L109" title="All 4 branches missed.">            if ((!map.containsKey(thingA)) || (!map.containsKey(thingB))) {</span>
+<span class="nc" id="L110">                totalDistances.add(</span>
+<span class="nc" id="L111">                    (double) thingsToCheck.get(thing) * 32. // HARDCODE: 32 is the max distance</span>
+                );
+<span class="nc" id="L113">                continue;</span>
+            }
+
+//            System.out.println(&quot;Checking &quot; + thingA.getSimpleName() + &quot; and &quot; + thingB.getSimpleName());
+
+<span class="nc" id="L118">            ArrayList&lt;Vector2&gt; allOfA = map.get(thingA);</span>
+<span class="nc" id="L119">            ArrayList&lt;Vector2&gt; allOfB = map.get(thingB);</span>
+
+<span class="nc" id="L121">            ArrayList&lt;Double&gt; distances = new ArrayList&lt;&gt;();</span>
+
+            // TODO: discus weather random should be centralized/seeded
+<span class="nc" id="L124">            Random random = new Random();</span>
+
+            // System.out.println(&quot;Checking 8 instead of &quot; + allOfA.size() * allOfB.size() + &quot; points&quot;);
+
+<span class="nc" id="L128">            int samples = 8;</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">            for (int i = 0; i &lt; samples; i++) {</span>
+                // Randomly select a point from allOfA and allOfB
+<span class="nc" id="L131">                Vector2 a = allOfA.get(random.nextInt(allOfA.size()));</span>
+<span class="nc" id="L132">                Vector2 b = allOfB.get(random.nextInt(allOfB.size()));</span>
+
+                // Calculate the distance and store it
+<span class="nc" id="L135">                double distance = distanceByAStar(grid, a, b, 32);</span>
+<span class="nc" id="L136">                distances.add(distance);</span>
+            }
+
+<span class="nc" id="L139">            double avg = this.getAvg(distances) * thingsToCheck.get(thing);</span>
+
+//            System.out.println(&quot;Average distance between &quot; + thingA.getSimpleName() + &quot; and &quot; + thingB.getSimpleName() + &quot; is &quot; + avg);
+
+<span class="nc" id="L143">            totalDistances.add(avg);</span>
+<span class="nc" id="L144">        }</span>
+<span class="nc" id="L145">        double avg = getAvg(totalDistances);</span>
+<span class="nc" id="L146">        double res = 100 - Math.max(Math.min((avg - 40) * 2, 100), 0);  // HARDCODE: 40 and *2 based on testing to get realistic min/max of score</span>
+
+//        System.out.println(&quot;Distance score: &quot; + res);
+
+<span class="nc" id="L150">        this.scores.add(res / 100);</span>
+
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        if (this.scores.size() &gt; 20) {</span>
+<span class="nc" id="L153">            this.scores.remove(0);</span>
+        }
+<span class="nc" id="L155">    }</span>
+
+    private double getAvg(ArrayList&lt;Double&gt; of) {
+<span class="nc" id="L158">        double sum = 0;</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">        for (double d : of) {</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">            if (d == -1) {</span>
+<span class="nc" id="L161">                continue;</span>
+            }
+
+<span class="nc" id="L164">            sum += d;</span>
+<span class="nc" id="L165">        }</span>
+<span class="nc" id="L166">        return sum / of.size();</span>
+    }
+
+    public double getScore() {
+<span class="nc" id="L170">        return this.getAvg(this.scores);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

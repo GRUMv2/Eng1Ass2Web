@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PauseScreen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.client</a> &gt; <span class="el_source">PauseScreen.java</span></div><h1>PauseScreen.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.client;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
+import io.github.GRUMv2.EngSim.entities.TmpButton;
+
+public class PauseScreen extends AbstractGameScreen {
+
+    private final TmpButton quitButton;
+
+    public PauseScreen(Renderer renderer, InputHandler inputHandler) {
+<span class="nc" id="L14">        super(renderer, inputHandler);</span>
+
+<span class="nc" id="L16">        this.quitButton = new TmpButton(</span>
+            &quot;QUIT&quot;,
+            new Vector2(540, 160),
+            new Vector2(200, 40),
+<span class="nc" id="L20">            () -&gt; this.changeEvent(Screens.QUIT),</span>
+            Color.GRAY
+        );
+<span class="nc" id="L23">        this.quitButton.centreText();</span>
+<span class="nc" id="L24">    }</span>
+
+    public void update(Renderer renderer, InputHandler inputHandler) {
+        // placeholder
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        if (Gdx.input.justTouched()) {</span>
+<span class="nc" id="L29">            this.changeEvent(Screens.GAME);</span>
+        }
+
+<span class="nc" id="L32">        renderer.drawText(&quot;Click anywhere to resume&quot;, new Vector2(640, 360), Color.BLACK, 2f, Align.center);</span>
+<span class="nc" id="L33">        this.quitButton.update(renderer, inputHandler);</span>
+
+<span class="nc" id="L35">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

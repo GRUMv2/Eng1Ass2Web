@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InputHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.client</a> &gt; <span class="el_source">InputHandler.java</span></div><h1>InputHandler.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.client;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+
+// Although we would prefer more robust and extensible input handling
+// with a processor/handler/multiplexer implementation,
+// this is fine to leave as-is for as long as scope permits it
+// as it achieves what it was intended to do well enough.
+// Not particularly practical if keyboard shortcuts become a must
+// in which case it gets binned and replaced with a proper input system
+
+/**
+ * InputHandler - master class passed to all update() methods for handling (mouse) input
+ */
+public class InputHandler {
+
+    final private OrthographicCamera camera;
+
+<span class="nc" id="L23">    public InputHandler(OrthographicCamera camera) {</span>
+<span class="nc" id="L24">        this.camera = camera;</span>
+<span class="nc" id="L25">    }</span>
+
+    /**
+     * Check whether mouse clicked
+     *
+     * @return whether mouse clicked
+     */
+    public boolean getMouseClicked() {
+<span class="nc" id="L33">        return Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);</span>
+    }
+
+    /**
+     * Position of mouse converted to libGDX terms
+     *
+     * @return Vector of mouse position
+     */
+    public Vector2 getMousePos() {
+<span class="nc" id="L42">        float x = Gdx.input.getX();</span>
+<span class="nc" id="L43">        float y = Gdx.input.getY();</span>
+<span class="nc" id="L44">        Vector3 screenCoords = new Vector3(x, y, 0);</span>
+<span class="nc" id="L45">        Vector3 worldCoords = camera.unproject(screenCoords);</span>
+<span class="nc" id="L46">        return new Vector2(worldCoords.x, worldCoords.y);</span>
+    }
+
+    /**
+     * Is mouse in bounds
+     *
+     * @param pos  origin coordinate
+     * @param size size of bounds
+     */
+    public boolean getMouseInBounds(Vector2 pos, Vector2 size) {
+<span class="nc" id="L56">        Vector2 mousePos = getMousePos();</span>
+<span class="nc bnc" id="L57" title="All 8 branches missed.">        return (</span>
+            mousePos.x &gt;= pos.x
+                &amp;&amp; mousePos.x &lt; pos.x + size.x
+                &amp;&amp; mousePos.y &gt;= pos.y
+                &amp;&amp; mousePos.y &lt; pos.y + size.y
+        );
+    }
+
+    /**
+     * Is mouse in bounds
+     *
+     * @param shape 2D list of [pos, size] arrays that can be passed
+     */
+    public boolean getMouseInBounds(Vector2[][] shape) {
+        // Where shape is a 2D list of [pos, size] arrays that can be passed
+        // to getMouseInBounds(pos, size)
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        for (Vector2[] box : shape) {</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            if (getMouseInBounds(box[0], box[1])) {</span>
+<span class="nc" id="L75">                return true;</span>
+            }
+        }
+<span class="nc" id="L78">        return false;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

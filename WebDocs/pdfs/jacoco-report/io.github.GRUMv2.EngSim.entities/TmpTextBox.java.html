@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TmpTextBox.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.entities</a> &gt; <span class="el_source">TmpTextBox.java</span></div><h1>TmpTextBox.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.entities;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
+import io.github.GRUMv2.EngSim.client.InputHandler;
+import io.github.GRUMv2.EngSim.client.Renderer;
+
+/**
+ * TmpTextBox
+ */
+public class TmpTextBox extends Entity {
+
+    private final Vector2 pos;
+    private final Vector2 size;
+    private Vector2 fontBounds;
+    private float textOffsetX;
+    private float textOffsetY;
+<span class="fc" id="L19">    private float borderWidth = 0f;</span>
+<span class="fc" id="L20">    private String content = &quot;&quot;;</span>
+    private Color backgroundColor;
+<span class="fc" id="L22">    private Color borderColor = Color.BLACK;</span>
+<span class="fc" id="L23">    private Color textColor = Color.BLACK;</span>
+<span class="fc" id="L24">    private int textAlign = Align.left;</span>
+
+<span class="fc" id="L26">    public TmpTextBox(Vector2 pos, Vector2 size) {</span>
+<span class="fc" id="L27">        this.pos = pos;</span>
+<span class="fc" id="L28">        this.size = size;</span>
+        // Text is drawn at the left wall of the bounding box, offset by both the border width
+        // and then &quot;an amount&quot; such that the text isn't right up against the edge, modelled
+        // in this case by the log function of the box area as it's relatively suitable
+<span class="fc" id="L32">        this.textOffsetX = (this.borderWidth / 2f) + (float) Math.log(this.size.x * this.size.x);</span>
+<span class="fc" id="L33">        this.textOffsetY = (this.borderWidth / 2f) + (float) Math.log(this.size.y * this.size.y);</span>
+<span class="fc" id="L34">        this.fontBounds = new Vector2(</span>
+            this.size.x - (2 * textOffsetX),
+            this.size.y - (2 * textOffsetY)
+        );
+<span class="fc" id="L38">    }</span>
+
+    public TmpTextBox(Vector2 pos, Vector2 size, String content) {
+<span class="fc" id="L41">        this(pos, size);</span>
+<span class="fc" id="L42">        this.content = content;</span>
+<span class="fc" id="L43">    }</span>
+
+    @SuppressWarnings(&quot;unused&quot;) // Planned to be used with text wrapping
+    public TmpTextBox(Vector2 pos, Vector2 size, String[] contentLines) {
+<span class="nc" id="L47">        this(pos, size, String.join(&quot;\n&quot;, contentLines));</span>
+<span class="nc" id="L48">    }</span>
+
+    public TmpTextBox(Vector2 pos, Vector2 size, String content, float borderWidth) {
+<span class="fc" id="L51">        this(pos, size, content);</span>
+<span class="fc" id="L52">        this.borderWidth = borderWidth;</span>
+<span class="fc" id="L53">    }</span>
+
+    @SuppressWarnings(&quot;unused&quot;)
+    public TmpTextBox(Vector2 pos, Vector2 size, String[] contentLines, float borderWidth) {
+<span class="nc" id="L57">        this(pos, size, String.join(&quot;\n&quot;, contentLines), borderWidth);</span>
+<span class="nc" id="L58">    }</span>
+
+    public Vector2 getPos() {
+<span class="nc" id="L61">        return pos;</span>
+    }
+
+    public Vector2 getSize() {
+<span class="nc" id="L65">        return size;</span>
+    }
+
+    public float getBorderWidth() {
+<span class="nc" id="L69">        return borderWidth;</span>
+    }
+
+    public void setBorderWidth(float borderWidth) {
+<span class="nc" id="L73">        this.borderWidth = borderWidth;</span>
+<span class="nc" id="L74">        this.textOffsetX = (this.borderWidth / 2f) + (float) Math.log(this.size.x * this.size.x);</span>
+<span class="nc" id="L75">        this.textOffsetY = (this.borderWidth / 2f) + (float) Math.log(this.size.y * this.size.y);</span>
+<span class="nc" id="L76">        this.fontBounds = new Vector2(</span>
+            this.size.x - (2 * textOffsetX),
+            this.size.y - (2 * textOffsetY)
+        );
+<span class="nc" id="L80">    }</span>
+
+    public String getContent() {
+<span class="nc" id="L83">        return content;</span>
+    }
+
+    public void setContent(String content) {
+<span class="fc" id="L87">        this.content = content;</span>
+<span class="fc" id="L88">    }</span>
+
+    public void setContent(String[] content) {
+<span class="nc" id="L91">        this.setContent(String.join(&quot;\n&quot;, content));</span>
+<span class="nc" id="L92">    }</span>
+
+    public Color getTextColor() {
+<span class="nc" id="L95">        return textColor;</span>
+    }
+
+    public void setTextColor(Color textColor) {
+<span class="nc" id="L99">        this.textColor = textColor;</span>
+<span class="nc" id="L100">    }</span>
+
+    public Color getBorderColor() {
+<span class="nc" id="L103">        return borderColor;</span>
+    }
+
+    public void setBorderColor(Color borderColor) {
+<span class="nc" id="L107">        this.borderColor = borderColor;</span>
+<span class="nc" id="L108">    }</span>
+
+    public void centreText() {
+<span class="fc" id="L111">        this.textAlign(Align.center);</span>
+<span class="fc" id="L112">    }</span>
+
+    private void textAlign(int alignment) {
+<span class="fc" id="L115">        this.textAlign = alignment;</span>
+<span class="fc" id="L116">    }</span>
+
+    public Color getBackgroundColor() {
+<span class="nc" id="L119">        return backgroundColor;</span>
+    }
+
+    public void setBackgroundColor(Color backgroundColor) {
+<span class="nc" id="L123">        this.backgroundColor = backgroundColor;</span>
+<span class="nc" id="L124">    }</span>
+
+    @Override
+    public void update(Renderer renderer, InputHandler inputHandler) {
+
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (this.borderWidth &gt; 0) {</span>
+<span class="nc" id="L130">            renderer.drawBorder(this.pos, this.size, this.borderColor, this.borderWidth);</span>
+        }
+
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        if (this.backgroundColor != null) {</span>
+<span class="nc" id="L134">            renderer.drawRect(this.pos, this.size, this.backgroundColor);</span>
+        }
+
+<span class="nc" id="L137">        Vector2 textPos = getVector2();</span>
+
+<span class="nc" id="L139">        renderer.drawText(</span>
+            this.content,
+            textPos,
+            this.textColor,
+<span class="nc" id="L143">            renderer.calcFontScale(this.fontBounds, this.content, 2f),</span>
+            this.textAlign
+        );
+<span class="nc" id="L146">    }</span>
+
+    private Vector2 getVector2() {
+        Vector2 textPos;
+<span class="nc bnc" id="L150" title="All 2 branches missed.">        if (this.textAlign == Align.left) {</span>
+<span class="nc" id="L151">            textPos = new Vector2(</span>
+                // Draw text at the left wall of the bounding box, offset by the border width and
+                // then &quot;an amount&quot; such that the text isn't right up against the edge, modelled
+                // in this case by the log function of the box area as it's relatively suitable
+                this.pos.x + this.textOffsetX,
+                // Centre text in the box
+                this.pos.y + (this.size.y / 2)
+            );
+        } else {
+<span class="nc" id="L160">            textPos = new Vector2(</span>
+                this.pos.x + (this.size.x / 2),
+                this.pos.y + (this.size.y / 2)
+            );
+        }
+<span class="nc" id="L165">        return textPos;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

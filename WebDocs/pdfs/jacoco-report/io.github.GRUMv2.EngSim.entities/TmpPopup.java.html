@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TmpPopup.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.entities</a> &gt; <span class="el_source">TmpPopup.java</span></div><h1>TmpPopup.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.entities;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import io.github.GRUMv2.EngSim.broker.PopupTicket;
+import io.github.GRUMv2.EngSim.client.InputHandler;
+import io.github.GRUMv2.EngSim.client.Renderer;
+
+/**
+ * TmpPopup
+ */
+public abstract class TmpPopup extends Entity {
+
+    // TODO: not this
+    // See note in Cell()
+<span class="nc" id="L16">    private final Vector2 POS = new Vector2(300, 20);</span>
+<span class="nc" id="L17">    private final Vector2 SIZE = new Vector2(680, 680);</span>
+
+<span class="nc" id="L19">    private final float BORDER_WIDTH = 5f;</span>
+<span class="nc" id="L20">    private final float CONTENT_SCALE = 0.7f;</span>
+<span class="nc" id="L21">    private final float HF_SCALE = ((1 - CONTENT_SCALE) / 2);</span>
+
+<span class="nc" id="L23">    private final Color bg = Color.valueOf(&quot;cccccc&quot;);</span>
+<span class="nc" id="L24">    private final Color bd = Color.valueOf(&quot;555555&quot;);</span>
+<span class="nc" id="L25">    private final Color fg = Color.valueOf(&quot;333333&quot;);</span>
+
+    private final Runnable popupHook;
+    private final PopupTicket ticket;
+    private final String content;
+    private String headerText;
+
+    private TmpButton[] buttons;
+    private final TmpTextBox headerBox;
+    private final TmpTextBox contentBox;
+
+<span class="nc" id="L36">    public TmpPopup(Runnable popupHook, PopupTicket popup) {</span>
+<span class="nc" id="L37">        this.ticket = popup;</span>
+<span class="nc" id="L38">        this.content = popup.getDescription();</span>
+<span class="nc" id="L39">        this.popupHook = popupHook;</span>
+
+<span class="nc" id="L41">        Vector2 contentPos = new Vector2(this.POS.x + (2 * this.BORDER_WIDTH), this.POS.y + (2 * this.BORDER_WIDTH));</span>
+<span class="nc" id="L42">        Vector2 contentSize = new Vector2(this.SIZE.x - (4 * this.BORDER_WIDTH), this.SIZE.y - (4 * this.BORDER_WIDTH));</span>
+
+<span class="nc" id="L44">        this.headerBox = new TmpTextBox(</span>
+                // (x, bottomLeftCorner + divider + footer + content)
+<span class="nc" id="L46">                new Vector2(contentPos.x, contentPos.y + (((this.HF_SCALE + this.CONTENT_SCALE) * contentSize.y) + this.BORDER_WIDTH)),</span>
+<span class="nc" id="L47">                new Vector2(contentSize.x, (contentSize.y * this.HF_SCALE) - this.BORDER_WIDTH)</span>
+        );
+<span class="nc" id="L49">        this.contentBox = new TmpTextBox(</span>
+<span class="nc" id="L50">                new Vector2(contentPos.x, contentPos.y + (this.HF_SCALE * contentSize.y)),</span>
+<span class="nc" id="L51">                new Vector2(contentSize.x, contentSize.y * this.CONTENT_SCALE),</span>
+                this.content
+        );
+<span class="nc" id="L54">        this.headerBox.centreText();</span>
+<span class="nc" id="L55">        this.headerBox.setTextColor(fg);</span>
+<span class="nc" id="L56">        this.contentBox.centreText();</span>
+<span class="nc" id="L57">        this.contentBox.setTextColor(fg);</span>
+<span class="nc" id="L58">    }</span>
+
+    public TmpButton[] getButtons() {
+<span class="nc" id="L61">        return buttons;</span>
+    }
+
+    public void setButtons(TmpButton[] buttons) {
+<span class="nc" id="L65">        this.buttons = buttons;</span>
+<span class="nc" id="L66">    }</span>
+
+    public Vector2 getPos() {
+<span class="nc" id="L69">        return POS;</span>
+    }
+
+    public Vector2 getSize() {
+<span class="nc" id="L73">        return SIZE;</span>
+    }
+
+    public String getContent() {
+<span class="nc" id="L77">        return content;</span>
+    }
+
+    public PopupTicket getTicket() {
+<span class="nc" id="L81">        return ticket;</span>
+    }
+
+    public void setHeaderText(String headerText) {
+<span class="nc" id="L85">        this.headerText = headerText;</span>
+<span class="nc" id="L86">        this.headerBox.setContent(this.headerText);</span>
+<span class="nc" id="L87">    }</span>
+
+    protected void dismiss(int index) {
+<span class="nc" id="L90">        this.ticket.dismiss(index);</span>
+<span class="nc" id="L91">        this.popupHook.run();</span>
+<span class="nc" id="L92">    }</span>
+
+    @Override
+    public void update(Renderer renderer, InputHandler inputHandler) {
+
+        // border hack
+<span class="nc" id="L98">        Color[] bColors = new Color[]{bg, bd, bg};</span>
+        float ibw;
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        for (int i = 0; i &lt; 3; i++) {</span>
+<span class="nc" id="L101">            ibw = i * this.BORDER_WIDTH;</span>
+<span class="nc" id="L102">            renderer.drawRect(</span>
+                    new Vector2(this.POS.x + ibw, this.POS.y + ibw),
+                    new Vector2(this.SIZE.x - (2 * ibw), this.SIZE.y - (2 * ibw)),
+                    bColors[i]
+            );
+
+<span class="nc bnc" id="L108" title="All 2 branches missed.">            if (i == 2) {</span>
+                //noinspection SuspiciousNameCombination
+<span class="nc" id="L110">                renderer.drawRect(</span>
+<span class="nc" id="L111">                        new Vector2(this.POS.x + (ibw * 2), this.POS.y + ibw + (this.HF_SCALE * (this.SIZE.y - (2 * ibw))) - this.BORDER_WIDTH),</span>
+<span class="nc" id="L112">                        new Vector2(this.SIZE.x - (4 * ibw), this.BORDER_WIDTH),</span>
+                        bd
+                );
+
+                //noinspection SuspiciousNameCombination
+<span class="nc" id="L117">                renderer.drawRect(</span>
+<span class="nc" id="L118">                        new Vector2(this.POS.x + (ibw * 2), this.POS.y + ibw + ((this.HF_SCALE + this.CONTENT_SCALE) * (this.SIZE.y - (2 * ibw)))),</span>
+<span class="nc" id="L119">                        new Vector2(this.SIZE.x - (4 * ibw), this.BORDER_WIDTH),</span>
+                        bd
+                );
+            }
+        }
+
+<span class="nc" id="L125">        this.headerBox.update(renderer, inputHandler);</span>
+<span class="nc" id="L126">        this.contentBox.update(renderer, inputHandler);</span>
+
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        for (TmpButton button : buttons) {</span>
+<span class="nc" id="L129">            button.update(renderer, inputHandler);</span>
+        }
+<span class="nc" id="L131">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

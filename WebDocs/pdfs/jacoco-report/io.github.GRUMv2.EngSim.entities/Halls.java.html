@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Halls.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.entities</a> &gt; <span class="el_source">Halls.java</span></div><h1>Halls.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.entities;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+
+public class Halls extends Building {
+
+<span class="fc" id="L8">    public final int studentHousingCapacity = 1_000;</span>
+<span class="fc" id="L9">    public final int studentStudyCapacity = 0;</span>
+<span class="fc" id="L10">    public final int leisureCapacity = 0;</span>
+<span class="fc" id="L11">    public final int staffOfficeCapacity = 0;</span>
+<span class="fc" id="L12">    public final int cost = 250_000;</span>
+<span class="fc" id="L13">    public final int monthlyUpkeepCosts = 50_000;</span>
+
+    public Halls(Vector2 mapPos) {
+        // TODO: Map data
+<span class="fc" id="L17">        super(</span>
+            mapPos,
+            new Vector2[]{
+                new Vector2(0, 0),
+                new Vector2(1, 0),
+                new Vector2(2, 0),
+                new Vector2(3, 0),
+                new Vector2(0, 1),
+                new Vector2(1, 1),
+                new Vector2(2, 1),
+                new Vector2(3, 1),
+            },
+            Color.CYAN
+        );
+<span class="fc" id="L31">        String NAME = &quot;Halls&quot;;</span>
+<span class="fc" id="L32">        this.setText(NAME);</span>
+<span class="fc" id="L33">        this.setName(NAME);</span>
+<span class="fc" id="L34">        String DESCRIPTION = &quot;A place to sleep.&quot;;</span>
+<span class="fc" id="L35">        this.setDescription(DESCRIPTION);</span>
+<span class="fc" id="L36">    }</span>
+
+    @Override
+    public int getStudentHousingCapacity() {
+<span class="nc" id="L40">        return studentHousingCapacity;</span>
+    }
+
+    @Override
+    public int getStudentStudyCapacity() {
+<span class="nc" id="L45">        return studentStudyCapacity;</span>
+    }
+
+    @Override
+    public int getLeisureCapacity() {
+<span class="nc" id="L50">        return leisureCapacity;</span>
+    }
+
+    @Override
+    public int getStaffOfficeCapacity() {
+<span class="nc" id="L55">        return staffOfficeCapacity;</span>
+    }
+
+    @Override
+    public int getCost() {
+<span class="fc" id="L60">        return cost;</span>
+    }
+
+    @Override
+    public int getMonthlyUpkeepCosts() {
+<span class="fc" id="L65">        return monthlyUpkeepCosts;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

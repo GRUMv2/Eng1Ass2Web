@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Leaderboard.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.entities</a> &gt; <span class="el_source">Leaderboard.java</span></div><h1>Leaderboard.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.entities;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import io.github.GRUMv2.EngSim.client.InputHandler;
+import io.github.GRUMv2.EngSim.client.Renderer;
+
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.ArrayList;
+
+/**
+ * Leaderboard
+ */
+public class Leaderboard extends Entity {
+
+<span class="nc" id="L16">    private final int LEADERBOARD_LENGTH = 10;</span>
+<span class="nc" id="L17">    private float borderWidth = 5f;</span>
+
+<span class="nc" id="L19">    private final float cellWidth = 0.5f;</span>
+<span class="nc" id="L20">    private final float contentHeight = 0.8f;</span>
+<span class="nc" id="L21">    private final float headerHeight = (1f - contentHeight) / 2f;</span>
+
+    private final Vector2 pos;
+    private final Vector2 size;
+
+    private final TmpTextBox titleHeader;
+    private final TmpTextBox nameHeader;
+    private final TmpTextBox scoreHeader;
+    private final TmpTextBox nameCol;
+    private final TmpTextBox scoreCol;
+
+    private ArrayList&lt;TmpTextBox&gt; entries;
+
+<span class="nc" id="L34">    public Leaderboard(Vector2 pos, Vector2 size) {</span>
+
+<span class="nc" id="L36">        this.pos = pos;</span>
+<span class="nc" id="L37">        this.size = size;</span>
+
+        // They're titled Tmp for a reason
+<span class="nc" id="L40">        this.nameCol = new TmpTextBox(</span>
+            pos,
+            new Vector2(size.x * cellWidth, size.y * contentHeight),
+            &quot;&quot;,
+            this.borderWidth / 2f
+        );
+
+<span class="nc" id="L47">        this.scoreCol = new TmpTextBox(</span>
+            new Vector2(pos.x + (size.x / 2f), pos.y),
+            new Vector2(size.x * cellWidth, size.y * contentHeight),
+            &quot;&quot;,
+            this.borderWidth / 2f
+        );
+
+<span class="nc" id="L54">        this.scoreHeader = new TmpTextBox(</span>
+            new Vector2(pos.x + (size.x / 2f), pos.y + (size.y * contentHeight)),
+            new Vector2(size.x * cellWidth, size.y * headerHeight),
+            &quot;&quot;,
+            this.borderWidth / 2f
+        );
+
+<span class="nc" id="L61">        this.nameHeader = new TmpTextBox(</span>
+            new Vector2(pos.x, pos.y + (size.y * contentHeight)),
+            new Vector2(size.x * cellWidth, size.y * headerHeight),
+            &quot;&quot;,
+            this.borderWidth / 2f
+        );
+
+<span class="nc" id="L68">        this.titleHeader = new TmpTextBox(</span>
+            new Vector2(pos.x, pos.y + (size.y * (contentHeight + headerHeight))),
+            new Vector2(size.x, size.y * headerHeight)
+        );
+
+<span class="nc" id="L73">        this.titleHeader.setContent(&quot;Leaderboard&quot;);</span>
+<span class="nc" id="L74">        this.titleHeader.centreText();</span>
+<span class="nc" id="L75">        this.nameHeader.setContent(&quot;NAME&quot;);</span>
+<span class="nc" id="L76">        this.scoreHeader.setContent(&quot;SCORE&quot;);</span>
+
+<span class="nc" id="L78">        this.entries = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L79">    }</span>
+
+    public Leaderboard(Vector2 pos, Vector2 size, float borderWidth) {
+<span class="nc" id="L82">        this(pos, size);</span>
+<span class="nc" id="L83">        this.borderWidth = borderWidth;</span>
+<span class="nc" id="L84">    }</span>
+
+    public void setValues(ArrayList&lt;SimpleImmutableEntry&lt;String, Integer&gt;&gt; leaderboard) {
+<span class="nc" id="L87">        Vector2 fullSize = this.nameCol.getSize();</span>
+<span class="nc" id="L88">        float boxHeight = fullSize.y / this.LEADERBOARD_LENGTH;</span>
+<span class="nc" id="L89">        Vector2 namePos = this.nameCol.getPos().cpy().add(0, fullSize.y - boxHeight);</span>
+<span class="nc" id="L90">        Vector2 scorePos = this.scoreCol.getPos().cpy().add(0, fullSize.y - boxHeight);</span>
+<span class="nc" id="L91">        Vector2 entrySize = new Vector2(fullSize.x, boxHeight);</span>
+<span class="nc" id="L92">        ArrayList&lt;TmpTextBox&gt; entries = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        for (int i = 0; i &lt; this.LEADERBOARD_LENGTH; i++) {</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">            if (leaderboard.size() &lt; i + 1) {</span>
+<span class="nc" id="L95">                break;</span>
+            }
+<span class="nc" id="L97">            entries.add(</span>
+<span class="nc" id="L98">                new TmpTextBox(namePos.cpy(), entrySize, leaderboard.get(i).getKey(), 1f)</span>
+            );
+<span class="nc" id="L100">            entries.add(</span>
+<span class="nc" id="L101">                new TmpTextBox(scorePos.cpy(), entrySize, leaderboard.get(i).getValue().toString(), 1f)</span>
+            );
+<span class="nc" id="L103">            namePos.sub(0, boxHeight);</span>
+<span class="nc" id="L104">            scorePos.sub(0, boxHeight);</span>
+        }
+<span class="nc" id="L106">        this.entries = entries;</span>
+<span class="nc" id="L107">    }</span>
+
+    @Override
+    public void update(Renderer renderer, InputHandler inputHandler) {
+
+<span class="nc" id="L112">        renderer.drawBorder(this.pos, this.size, Color.BLACK, this.borderWidth);</span>
+
+<span class="nc" id="L114">        this.titleHeader.update(renderer, inputHandler);</span>
+<span class="nc" id="L115">        this.nameHeader.update(renderer, inputHandler);</span>
+<span class="nc" id="L116">        this.scoreHeader.update(renderer, inputHandler);</span>
+<span class="nc" id="L117">        this.nameCol.update(renderer, inputHandler);</span>
+<span class="nc" id="L118">        this.scoreCol.update(renderer, inputHandler);</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        for (TmpTextBox box : this.entries) {</span>
+<span class="nc" id="L120">            box.update(renderer, inputHandler);</span>
+<span class="nc" id="L121">        }</span>
+<span class="nc" id="L122">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

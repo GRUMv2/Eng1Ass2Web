@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ForegroundEntity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.entities</a> &gt; <span class="el_source">ForegroundEntity.java</span></div><h1>ForegroundEntity.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.entities;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
+import io.github.GRUMv2.EngSim.client.InputHandler;
+import io.github.GRUMv2.EngSim.client.Renderer;
+
+/**
+ * ForegroundEntity
+ */
+public abstract class ForegroundEntity extends Entity {
+    protected static final float CELL_WIDTH = (float) 720 / 30;  // TODO: -&gt; Settings
+
+    private final Vector2[] relCellsUsed;
+    private final Vector2 mapPos;
+    private final Color color;
+    private final Vector2 pos;
+
+    private String text;
+    private Color textColor;
+    private final Vector2[] bounds;
+    private Vector2 textMidpoint;
+    private final Vector2 fontBounds;
+
+<span class="fc" id="L26">    public ForegroundEntity(Vector2 mapPos, Vector2[] relCellsUsed, Color color) {</span>
+<span class="fc" id="L27">        this.mapPos = mapPos;</span>
+<span class="fc" id="L28">        this.relCellsUsed = relCellsUsed;</span>
+<span class="fc" id="L29">        this.color = color;</span>
+        // TODO: un-hardcode
+<span class="fc" id="L31">        this.pos = new Vector2((1280 - 720) + (this.mapPos.x * CELL_WIDTH), this.mapPos.y * CELL_WIDTH);</span>
+<span class="fc" id="L32">        this.bounds = this.getBounds();</span>
+<span class="fc" id="L33">        this.fontBounds = this.fontHackBounds();</span>
+<span class="fc" id="L34">    }</span>
+
+    public void setText(String text, Color textColor) {
+<span class="fc" id="L37">        this.text = text;</span>
+<span class="fc" id="L38">        this.textColor = textColor;</span>
+<span class="fc" id="L39">        this.textMidpoint = getTextMidpoint();</span>
+<span class="fc" id="L40">    }</span>
+
+    public String getText() {
+<span class="nc" id="L43">        return text;</span>
+    }
+
+    public void setText(String text) {
+<span class="fc" id="L47">        this.setText(text, Color.WHITE);    // TODO: default color -&gt; Settings?</span>
+<span class="fc" id="L48">    }</span>
+
+    public Color getTextColor() {
+<span class="nc" id="L51">        return textColor;</span>
+    }
+
+    public Vector2 getMapPos() {
+<span class="fc" id="L55">        return mapPos;</span>
+    }
+
+    public Vector2[] getRelCellsUsed() {
+<span class="fc" id="L59">        return relCellsUsed;</span>
+    }
+
+    public Color getColor() {
+<span class="fc" id="L63">        return color;</span>
+    }
+
+    public Vector2 getPos() {
+<span class="nc" id="L67">        return pos;</span>
+    }
+
+
+    // TODO, low priority: Rewrite font rendering
+    // There's no context of bounds to the existing system outside of the
+    // hack added in drawScalingText
+    // The entire system needs to be replaced with, at very minimum,
+    // the concept of &quot;objects with text&quot; that control their own font scaling
+    // rather than the current &quot;draw a box of hardcoded size then draw text of hardcoded size on top&quot;
+
+    private Vector2 fontHackBounds() {
+<span class="fc" id="L79">        return new Vector2(</span>
+            (bounds[1].x - bounds[0].x + 0.5f) * CELL_WIDTH,
+            (bounds[1].y - bounds[0].y + 0.5f) * CELL_WIDTH
+        );
+    }
+
+    private Vector2 getTextMidpoint() {
+<span class="fc" id="L86">        float x = (bounds[1].x + bounds[0].x + 1) / 2;</span>
+<span class="fc" id="L87">        float y = (bounds[1].y + bounds[0].y + 1) / 2;</span>
+<span class="fc" id="L88">        return new Vector2(this.pos.x + (x * CELL_WIDTH), this.pos.y + (y * CELL_WIDTH));</span>
+    }
+
+    private Vector2[] getBounds() {
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">        if (relCellsUsed.length &lt; 1) {</span>
+<span class="nc" id="L93">            return new Vector2[2];</span>
+        }
+<span class="fc" id="L95">        float minX = Integer.MAX_VALUE;</span>
+<span class="fc" id="L96">        float minY = Integer.MAX_VALUE;</span>
+<span class="fc" id="L97">        float maxY = Integer.MIN_VALUE;</span>
+<span class="fc" id="L98">        float maxX = Integer.MIN_VALUE;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        for (Vector2 v : relCellsUsed) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            if (v.x &gt; maxX) {</span>
+<span class="fc" id="L101">                maxX = v.x;</span>
+            }
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            if (v.x &lt; minX) {</span>
+<span class="fc" id="L104">                minX = v.x;</span>
+            }
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            if (v.y &gt; maxY) {</span>
+<span class="fc" id="L107">                maxY = v.y;</span>
+            }
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            if (v.y &lt; minY) {</span>
+<span class="fc" id="L110">                minY = v.y;</span>
+            }
+        }
+<span class="fc" id="L113">        Vector2 min = new Vector2(minX, minY);</span>
+<span class="fc" id="L114">        Vector2 max = new Vector2(maxX, maxY);</span>
+<span class="fc" id="L115">        return new Vector2[]{min, max};</span>
+    }
+
+    @Override
+    public void update(Renderer renderer, InputHandler inputHandler) {
+<span class="nc" id="L120">        @SuppressWarnings(&quot;SuspiciousNameCombination&quot;) Vector2 cellSize = new Vector2(CELL_WIDTH, CELL_WIDTH);</span>
+
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        for (Vector2 relCellOffset : this.relCellsUsed) {</span>
+<span class="nc" id="L123">            Vector2 cellPos = new Vector2(</span>
+                this.pos.x + (relCellOffset.x * CELL_WIDTH),
+                this.pos.y + (relCellOffset.y * CELL_WIDTH)
+            );
+<span class="nc" id="L127">            renderer.drawRect(cellPos, cellSize, this.color);</span>
+        }
+
+
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (this.text != null) {</span>
+<span class="nc" id="L132">            renderer.drawText(</span>
+                this.text,
+                new Vector2(this.textMidpoint.x, this.textMidpoint.y),
+                this.textColor, // Color gets set when text does
+<span class="nc" id="L136">                renderer.calcFontScale(this.fontBounds, this.text, /* max-size, TODO un-hardcode */ 2.0f),</span>
+                Align.center
+            );
+        }
+<span class="nc" id="L140">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

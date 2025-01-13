@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SubmitBox.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.entities</a> &gt; <span class="el_source">SubmitBox.java</span></div><h1>SubmitBox.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.entities;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import io.github.GRUMv2.EngSim.client.InputHandler;
+import io.github.GRUMv2.EngSim.client.Renderer;
+
+/**
+ * SubmitBox
+ */
+public class SubmitBox extends Entity {
+    // Enough overlap with TmpTextBox that it could extend it
+    // Or, really, should both extend a common abstract class
+    //
+    // It's almost like we're missing a proper UI overhaul or something
+
+    private final Vector2 pos;
+    private final Vector2 size;
+
+<span class="nc" id="L20">    private final float ratio = 0.75f;</span>
+
+    private final TmpButton button;
+    private final InputField field;
+
+    private Color backgroundColor;
+
+<span class="nc" id="L27">    public SubmitBox(Vector2 pos, Vector2 size, Runnable submitAction) {</span>
+<span class="nc" id="L28">        this.pos = pos;</span>
+<span class="nc" id="L29">        this.size = size;</span>
+
+<span class="nc" id="L31">        this.button = new TmpButton(</span>
+            &quot;Submit&quot;,
+            new Vector2(pos.x + (ratio * size.x), pos.y),
+            new Vector2((1 - ratio) * size.x, size.y),
+            submitAction
+        );
+<span class="nc" id="L37">        this.button.setBorderWidth(3f);</span>
+
+<span class="nc" id="L39">        this.field = new InputField(</span>
+            pos,
+            new Vector2(size.x * ratio, size.y)
+        );
+<span class="nc" id="L43">        this.field.setBorderWidth(3f);</span>
+<span class="nc" id="L44">    }</span>
+
+    public SubmitBox(Vector2 pos, Vector2 size, Runnable submitAction, Color backgroundColor) {
+<span class="nc" id="L47">        this(pos, size, submitAction);</span>
+<span class="nc" id="L48">        this.setBackgroundColor(backgroundColor);</span>
+<span class="nc" id="L49">    }</span>
+
+    @Override
+    public void update(Renderer renderer, InputHandler inputHandler) {
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (this.backgroundColor == null) {</span>
+<span class="nc" id="L54">            renderer.drawBorder(this.pos, this.size, Color.BLACK, 3f);</span>
+        } else {
+<span class="nc" id="L56">            renderer.drawRect(this.pos, this.size, this.backgroundColor);</span>
+<span class="nc" id="L57">            renderer.drawBorder(this.pos, this.size, Color.BLACK, 3f);</span>
+        }
+<span class="nc" id="L59">        this.button.update(renderer, inputHandler);</span>
+<span class="nc" id="L60">        this.field.update(renderer, inputHandler);</span>
+<span class="nc" id="L61">    }</span>
+
+    public Color getBackgroundColor() {
+<span class="nc" id="L64">        return backgroundColor;</span>
+    }
+
+    public void setBackgroundColor(Color backgroundColor) {
+<span class="nc" id="L68">        this.backgroundColor = backgroundColor;</span>
+        // kinda arbitrary but easily reworked
+<span class="nc" id="L70">        this.button.setBackgroundColor(Color.WHITE);</span>
+<span class="nc" id="L71">        this.field.setBackgroundColor(Color.WHITE);</span>
+<span class="nc" id="L72">    }</span>
+
+    public String getValue() {
+<span class="nc" id="L75">        return this.field.getContent();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

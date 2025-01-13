@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RollingValuesSimulator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.server.simulation</a> &gt; <span class="el_source">RollingValuesSimulator.java</span></div><h1>RollingValuesSimulator.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.server.simulation;
+
+
+import io.github.GRUMv2.EngSim.entities.Building;
+import io.github.GRUMv2.EngSim.entities.ForegroundEntity;
+
+import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+// Using a rolling value average removes the need to have a 'building' state as it allows us to
+// control how quickly the values change. taking a few seconds to update the student numbers removes
+// immediate income for example.
+<span class="nc" id="L13">public class RollingValuesSimulator {</span>
+<span class="nc" id="L14">    private final ArrayList&lt;Integer&gt; studentHousingCapacityList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L15">    private final ArrayList&lt;Integer&gt; studentStudyCapacityList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L16">    private final ArrayList&lt;Integer&gt; leisureCapacityList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L17">    private final ArrayList&lt;Integer&gt; staffOfficeCapacityList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L18">    private final ArrayList&lt;Integer&gt; monthlyUpkeepCostsList = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L20">    private float studentHousingCapacityMultiplier = 1;</span>
+<span class="nc" id="L21">    private float studentStudyCapacityMultiplier = 1;</span>
+<span class="nc" id="L22">    private float leisureCapacityMultiplier = 1;</span>
+<span class="nc" id="L23">    private float staffOfficeCapacityMultiplier = 1;</span>
+<span class="nc" id="L24">    private float monthlyUpkeepCostsMultiplier = 1;</span>
+
+    private void addValue(ArrayList&lt;Integer&gt; list, int value) {
+<span class="nc" id="L27">        list.add(value);</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        if (list.size() &gt; 1000) list.remove(0);</span>
+<span class="nc" id="L29">    }</span>
+
+    public void tick(CopyOnWriteArrayList&lt;ForegroundEntity&gt; entities) {
+<span class="nc" id="L32">        int studentHousingCapacityS = 0;</span>
+<span class="nc" id="L33">        int studentStudyCapacityS = 0;</span>
+<span class="nc" id="L34">        int leisureCapacityS = 0;</span>
+<span class="nc" id="L35">        int staffOfficeCapacityS = 0;</span>
+<span class="nc" id="L36">        int monthlyUpkeepCostsS = 0;</span>
+
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        for (ForegroundEntity entity : entities) {</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">            if (!(entity instanceof Building)) continue;</span>
+
+<span class="nc" id="L41">            studentHousingCapacityS += ((Building) entity).getStudentHousingCapacity();</span>
+<span class="nc" id="L42">            studentStudyCapacityS += ((Building) entity).getStudentStudyCapacity();</span>
+<span class="nc" id="L43">            leisureCapacityS += ((Building) entity).getLeisureCapacity();</span>
+<span class="nc" id="L44">            staffOfficeCapacityS += ((Building) entity).getStaffOfficeCapacity();</span>
+<span class="nc" id="L45">            monthlyUpkeepCostsS += ((Building) entity).getMonthlyUpkeepCosts();</span>
+<span class="nc" id="L46">        }</span>
+
+<span class="nc" id="L48">        this.addValue(studentHousingCapacityList, studentHousingCapacityS);</span>
+<span class="nc" id="L49">        this.addValue(studentStudyCapacityList, studentStudyCapacityS);</span>
+<span class="nc" id="L50">        this.addValue(leisureCapacityList, leisureCapacityS);</span>
+<span class="nc" id="L51">        this.addValue(staffOfficeCapacityList, staffOfficeCapacityS);</span>
+<span class="nc" id="L52">        this.addValue(monthlyUpkeepCostsList, monthlyUpkeepCostsS);</span>
+
+<span class="nc" id="L54">        studentHousingCapacityMultiplier = (studentHousingCapacityMultiplier - 1) * 0.999f + 1;</span>
+<span class="nc" id="L55">        studentStudyCapacityMultiplier = (studentStudyCapacityMultiplier - 1) * 0.999f + 1;</span>
+<span class="nc" id="L56">        leisureCapacityMultiplier = (leisureCapacityMultiplier - 1) * 0.999f + 1;</span>
+<span class="nc" id="L57">        staffOfficeCapacityMultiplier = (staffOfficeCapacityMultiplier - 1) * 0.999f + 1;</span>
+<span class="nc" id="L58">        monthlyUpkeepCostsMultiplier = (monthlyUpkeepCostsMultiplier - 1) * 0.999f + 1;</span>
+<span class="nc" id="L59">    }</span>
+
+    private int getAvg(ArrayList&lt;Integer&gt; of) {
+<span class="nc" id="L62">        long t = 0;</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        for (int n : of) t += n;</span>
+<span class="nc" id="L64">        return (int) Math.floor((double) t / of.size());</span>
+    }
+
+    public int studentHousingCapacity() {
+<span class="nc" id="L68">        return (int) Math.floor(this.getAvg(this.studentHousingCapacityList) * studentHousingCapacityMultiplier);</span>
+    }
+
+    public int studentStudyCapacity() {
+<span class="nc" id="L72">        return (int) Math.floor(this.getAvg(this.studentStudyCapacityList) * studentStudyCapacityMultiplier);</span>
+    }
+
+    public int leisureCapacity() {
+<span class="nc" id="L76">        return (int) Math.floor(this.getAvg(this.leisureCapacityList) * leisureCapacityMultiplier);</span>
+    }
+
+    public int staffOfficeCapacity() {
+<span class="nc" id="L80">        return (int) Math.floor(this.getAvg(this.staffOfficeCapacityList) * staffOfficeCapacityMultiplier);</span>
+    }
+
+    public int monthlyUpkeepCosts() {
+<span class="nc" id="L84">        return (int) Math.floor(this.getAvg(this.monthlyUpkeepCostsList) * monthlyUpkeepCostsMultiplier);</span>
+    }
+
+    public void setStudentHousingCapacityMultiplier(float to) {
+<span class="nc" id="L88">        studentHousingCapacityMultiplier = to;</span>
+<span class="nc" id="L89">    }</span>
+
+    public void setStudentStudyCapacityMultiplier(float to) {
+<span class="nc" id="L92">        studentStudyCapacityMultiplier = to;</span>
+<span class="nc" id="L93">    }</span>
+
+    public void setLeisureCapacityMultiplier(float to) {
+<span class="nc" id="L96">        leisureCapacityMultiplier = to;</span>
+<span class="nc" id="L97">    }</span>
+
+    public void setStaffOfficeCapacityMultiplier(float to) {
+<span class="nc" id="L100">        staffOfficeCapacityMultiplier = to;</span>
+<span class="nc" id="L101">    }</span>
+
+    public void setMonthlyUpkeepCostsMultiplier(float to) {
+<span class="nc" id="L104">        monthlyUpkeepCostsMultiplier = to;</span>
+<span class="nc" id="L105">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

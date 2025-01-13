@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TimeKeeper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.server</a> &gt; <span class="el_source">TimeKeeper.java</span></div><h1>TimeKeeper.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.server;
+
+/**
+ * This class is responsible for managing the game time.
+ */
+public class TimeKeeper {
+    private final long yearsPerMinute;
+<span class="fc" id="L8">    private long startTime = -1;</span>
+<span class="fc" id="L9">    private long pausedTime = 0;</span>
+<span class="fc" id="L10">    private boolean isPaused = false;</span>
+
+
+    /**
+     * Constructs a TimeKeeper with the specified years per minute.
+     *
+     * @param yearsPerMinute the number of years that pass per minute of real time
+     */
+<span class="fc" id="L18">    public TimeKeeper(long yearsPerMinute) {</span>
+<span class="fc" id="L19">        this.yearsPerMinute = yearsPerMinute;</span>
+<span class="fc" id="L20">    }</span>
+
+
+    /**
+     * Starts the game timer.
+     */
+    public void start() {
+<span class="fc" id="L27">        this.startTime = System.currentTimeMillis();</span>
+
+<span class="fc" id="L29">        System.out.println(&quot;[ TME ] GameTimer started at &quot; + this.startTime);</span>
+<span class="fc" id="L30">    }</span>
+
+    /**
+     * Pauses the game timer.
+     */
+    public void pause() {
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (isPaused) return;</span>
+
+<span class="fc" id="L38">        this.pausedTime = System.currentTimeMillis();</span>
+<span class="fc" id="L39">        this.isPaused = true;</span>
+
+<span class="fc" id="L41">        System.out.println(&quot;[ TME ] GameTimer paused at &quot; + this.pausedTime);</span>
+<span class="fc" id="L42">    }</span>
+
+    /**
+     * Unpauses the game timer.
+     */
+    public void unpause() {
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if (!isPaused) return;</span>
+
+<span class="fc" id="L50">        this.startTime += System.currentTimeMillis() - pausedTime;</span>
+<span class="fc" id="L51">        this.isPaused = false;</span>
+
+<span class="fc" id="L53">        System.out.println(&quot;[ TME ] GameTimer un-paused, start time adjusted to &quot; +</span>
+<span class="fc" id="L54">            this.startTime + &quot; after &quot; + (System.currentTimeMillis() - pausedTime));</span>
+<span class="fc" id="L55">    }</span>
+
+    /**
+     * Returns the game time since start in milliseconds.
+     *
+     * @return the game time in milliseconds
+     */
+    public long currentGameTime() {
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (startTime == -1) return 0;</span>
+
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (isPaused) return pausedTime - startTime;</span>
+
+<span class="fc" id="L67">        return System.currentTimeMillis() - startTime;</span>
+    }
+
+    /**
+     * Formats the inputted time (milliseconds) into a string.
+     *
+     * @param time the time in milliseconds
+     * @return the formatted time string
+     */
+    public String timeFormatted(double time) {
+<span class="fc" id="L77">        double minutes = (time / 60) / 1000;</span>
+<span class="fc" id="L78">        double years = minutes * yearsPerMinute;</span>
+<span class="fc" id="L79">        int yearFormatted = (int) Math.floor(years) + 2024;</span>
+<span class="fc" id="L80">        int month = (int) Math.floor((years - Math.floor(years)) * 12);</span>
+<span class="fc" id="L81">        String monthFormatted = new String[]{&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;}[month];</span>
+<span class="fc" id="L82">        return monthFormatted + &quot; &quot; + yearFormatted;</span>
+    }
+
+    /**
+     * Returns the current game time in a formatted string.
+     * The format is &quot;Month Year&quot;, where Month is the abbreviated month name
+     * and Year is the calculated year based on the game time.
+     *
+     * @return the formatted game time string
+     */
+    public String currentGameTimeFormatted() {
+<span class="fc" id="L93">        return timeFormatted(currentGameTime());</span>
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

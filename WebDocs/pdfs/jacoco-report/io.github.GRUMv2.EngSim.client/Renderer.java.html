@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Renderer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.client</a> &gt; <span class="el_source">Renderer.java</span></div><h1>Renderer.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.client;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.ScreenUtils;
+
+/**
+ * Renderer - master libGDX renderer class,
+ * passed to all classes that render to the screen
+ */
+public class Renderer {
+
+    final private ShapeRenderer shapeRenderer;
+    final private BitmapFont font;
+    final private SpriteBatch spriteBatch;
+    final private GlyphLayout glyphLayout;
+
+<span class="nc" id="L27">    public Renderer(OrthographicCamera camera) {</span>
+<span class="nc" id="L28">        shapeRenderer = new ShapeRenderer();</span>
+<span class="nc" id="L29">        font = new BitmapFont();</span>
+<span class="nc" id="L30">        spriteBatch = new SpriteBatch();</span>
+<span class="nc" id="L31">        glyphLayout = new GlyphLayout();</span>
+<span class="nc" id="L32">        shapeRenderer.setProjectionMatrix(camera.combined);</span>
+<span class="nc" id="L33">        spriteBatch.setProjectionMatrix(camera.combined);</span>
+<span class="nc" id="L34">    }</span>
+
+    // Arguably pointless and screen clear could just be thrown in AGS
+    public void update() {
+<span class="nc" id="L38">        drawScreen();</span>
+<span class="nc" id="L39">    }</span>
+
+    /**
+     * Dispose of libGDX assets
+     */
+    public void dispose() {
+<span class="nc" id="L45">        shapeRenderer.dispose();</span>
+<span class="nc" id="L46">        font.dispose();</span>
+<span class="nc" id="L47">        spriteBatch.dispose();</span>
+<span class="nc" id="L48">    }</span>
+
+    public void drawRect(Vector2 position, Vector2 size, Color color) {
+<span class="nc" id="L51">        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);</span>
+<span class="nc" id="L52">        shapeRenderer.setColor(color);</span>
+<span class="nc" id="L53">        shapeRenderer.rect(position.x, position.y, size.x, size.y);</span>
+<span class="nc" id="L54">        shapeRenderer.end();</span>
+<span class="nc" id="L55">    }</span>
+
+    public void drawRect(Vector2 position, Vector2 size, Color color, float alpha) {
+<span class="nc" id="L58">        Gdx.graphics.getGL20().glEnable(GL20.GL_BLEND);</span>
+<span class="nc" id="L59">        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);</span>
+<span class="nc" id="L60">        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);</span>
+<span class="nc" id="L61">        Color alphaColor = new Color(color);</span>
+<span class="nc" id="L62">        alphaColor.sub(0, 0, 0, 1 - alpha);</span>
+<span class="nc" id="L63">        shapeRenderer.setColor(alphaColor);</span>
+<span class="nc" id="L64">        shapeRenderer.rect(position.x, position.y, size.x, size.y);</span>
+<span class="nc" id="L65">        shapeRenderer.end();</span>
+<span class="nc" id="L66">        Gdx.gl.glDisable(GL20.GL_BLEND);</span>
+<span class="nc" id="L67">    }</span>
+
+
+    public void drawBorder(Vector2 position, Vector2 size, Color color, float borderWidth) {
+<span class="nc" id="L71">        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);</span>
+<span class="nc" id="L72">        shapeRenderer.setColor(color);</span>
+<span class="nc" id="L73">        Gdx.gl.glLineWidth(borderWidth);</span>
+<span class="nc" id="L74">        shapeRenderer.rect(position.x, position.y, size.x, size.y);</span>
+<span class="nc" id="L75">        shapeRenderer.end();</span>
+<span class="nc" id="L76">    }</span>
+
+
+    // TODO, low priority: Rewrite font rendering
+    // There's no context of bounds to the existing system outside of the
+    // hack added in drawScalingText
+    // The entire system needs to be replaced with, at very minimum,
+    // the concept of &quot;objects with text&quot; that control their own font scaling
+    // rather than the current &quot;draw a box of hardcoded size then draw text of hardcoded size on top&quot;
+    public float calcFontScale(Vector2 boundSize, String text, float maxSize) {
+        // Scaling hack
+        // There are numerous better ways of doing this that would require a rewrite of a lot of other stuff
+<span class="nc" id="L88">        font.getData().setScale(1.0f);</span>
+<span class="nc" id="L89">        glyphLayout.setText(font, text);</span>
+<span class="nc" id="L90">        float scaleSize = Float.min(boundSize.x / glyphLayout.width, boundSize.y / glyphLayout.height);</span>
+<span class="nc" id="L91">        return Float.min(scaleSize, maxSize);</span>
+    }
+
+    public float calcFontScale(Vector2 boundSize, String text) {
+<span class="nc" id="L95">        return this.calcFontScale(boundSize, text, Float.MAX_VALUE);</span>
+    }
+
+
+    public void drawText(String text, Vector2 position, Color color, float fontSize, int alignment) {
+<span class="nc" id="L100">        spriteBatch.begin();</span>
+<span class="nc" id="L101">        font.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);</span>
+<span class="nc" id="L102">        font.getData().setScale(fontSize);</span>
+<span class="nc" id="L103">        glyphLayout.setText(font, text, color,</span>
+            3.0f,           // targetWidth; ignored if no wrapping/truncation, I think
+            alignment,      // Alignment in respect to pos XY
+            false           // Text wrap
+        );
+<span class="nc" id="L108">        font.draw(spriteBatch, glyphLayout,</span>
+            position.x,
+            position.y + (glyphLayout.height / 2)
+        );
+<span class="nc" id="L112">        font.getData().setScale(1.0f);</span>
+<span class="nc" id="L113">        spriteBatch.end();</span>
+<span class="nc" id="L114">    }</span>
+
+    public void drawText(String text, Vector2 position, Color color, float fontSize) {
+<span class="nc" id="L117">        this.drawText(text, position, color, fontSize, Align.left);</span>
+<span class="nc" id="L118">    }</span>
+
+    private void drawScreen() {
+<span class="nc" id="L121">        ScreenUtils.clear(1, 1, 1, 1);</span>
+<span class="nc" id="L122">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

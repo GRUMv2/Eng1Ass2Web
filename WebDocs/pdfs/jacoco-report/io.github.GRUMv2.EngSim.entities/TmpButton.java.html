@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TmpButton.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">core</a> &gt; <a href="index.source.html" class="el_package">io.github.GRUMv2.EngSim.entities</a> &gt; <span class="el_source">TmpButton.java</span></div><h1>TmpButton.java</h1><pre class="source lang-java linenums">package io.github.GRUMv2.EngSim.entities;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
+import io.github.GRUMv2.EngSim.client.InputHandler;
+import io.github.GRUMv2.EngSim.client.Renderer;
+
+import static io.github.GRUMv2.EngSim.client.GameScreen.Modes;
+
+public class TmpButton extends TmpTextBox {
+<span class="fc" id="L11">    private Modes mode = null;</span>
+
+    public TmpButton(String text, Vector2 pos, Vector2 size, Runnable handleClick) {
+<span class="fc" id="L14">        super(pos, size);</span>
+<span class="fc" id="L15">        this.setContent(text);</span>
+<span class="fc" id="L16">        this.setHandleClick(handleClick);</span>
+<span class="fc" id="L17">    }</span>
+
+    public TmpButton(String text, Vector2 pos, Vector2 size, Runnable handleClick, Color backgroundColor) {
+<span class="nc" id="L20">        this(text, pos, size, handleClick);</span>
+<span class="nc" id="L21">        this.setBackgroundColor(backgroundColor);</span>
+<span class="nc" id="L22">    }</span>
+
+    public TmpButton(String text, Vector2 pos, Vector2 size, Runnable handleClick, Modes mode) {
+<span class="fc" id="L25">        this(text, pos, size, handleClick);</span>
+<span class="fc" id="L26">        this.mode = mode;</span>
+<span class="fc" id="L27">    }</span>
+
+    // TODO: Button rendering abstraction
+    @Override
+    public void update(Renderer renderer, InputHandler inputHandler) {
+<span class="nc" id="L32">        update(renderer, inputHandler, this.getBackgroundColor());</span>
+<span class="nc" id="L33">    }</span>
+
+    public void update(Renderer renderer, InputHandler inputHandler, Color color) {
+<span class="nc" id="L36">        this.setBackgroundColor(color);</span>
+<span class="nc" id="L37">        super.update(renderer, inputHandler);</span>
+<span class="nc bnc" id="L38" title="All 4 branches missed.">        if (inputHandler.getMouseClicked() &amp;&amp; inputHandler.getMouseInBounds(this.getPos(), this.getSize())) {</span>
+<span class="nc" id="L39">            this.click();</span>
+        }
+<span class="nc" id="L41">    }</span>
+
+    public Modes getMode() {
+<span class="nc" id="L44">        return mode;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
